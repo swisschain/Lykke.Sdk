@@ -6,46 +6,37 @@ using Lykke.Logs;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Lykke.SlackNotification.AzureQueue;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 
 namespace Lykke.Sdk
 {
     internal class SdkModule<TAppSettings> : Module 
         where TAppSettings : BaseAppSettings
     {
+        private readonly IReloadingManager<TAppSettings> _settings;
         private readonly Func<IReloadingManager<TAppSettings>, IReloadingManager<string>> _logsConnectionStringFactory;
         
-        public SdkModule(Func<IReloadingManager<TAppSettings>,IReloadingManager<string>> logsConnectionStringFactory)
+        public SdkModule(IReloadingManager<TAppSettings> settings, Func<IReloadingManager<TAppSettings>,IReloadingManager<string>> logsConnectionStringFactory)
         {
+            _settings = settings;
             _logsConnectionStringFactory = logsConnectionStringFactory;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(ctx => new ConfigurationBuilder().AddEnvironmentVariables().Build())
-                .As<IConfigurationRoot>().SingleInstance();
-
-            builder.Register(ctx => ctx.Resolve<IConfigurationRoot>().LoadSettings<TAppSettings>())
-                .As<IReloadingManager<TAppSettings>>()
-                .SingleInstance();
-
+            builder.Register(ctx => _settings).As<IReloadingManager<TAppSettings>>();
+            
             builder.Register(ctx =>
             {
-                var settings = ctx.Resolve<IReloadingManager<TAppSettings>>();
-
-                return settings.Nested(x => x.MonitoringServiceClient);
+                return _settings.Nested(x => x.MonitoringServiceClient);
             })
             .As<IReloadingManager<MonitoringServiceClientSettings>>();
 
             builder.Register(ctx =>
                 {
-                    var settings = ctx.Resolve<IReloadingManager<TAppSettings>>();
-
                     return CreateLogWithSlack(
                         builder,
-                        _logsConnectionStringFactory(settings),
-                        settings.Nested(x => x.SlackNotifications).CurrentValue);
+                        _logsConnectionStringFactory(_settings),
+                        _settings.Nested(x => x.SlackNotifications).CurrentValue);
                 })
                 .As<ILog>()
                 .SingleInstance();

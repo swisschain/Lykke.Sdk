@@ -8,6 +8,7 @@ using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lykke.Sdk
 {
@@ -16,7 +17,7 @@ namespace Lykke.Sdk
     {
         public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeAppOptions> optionBuilder)
         {
-            var log = (ILog)app.ApplicationServices.GetService(typeof(ILog));
+            var log = app.ApplicationServices.GetService<ILog>();
 
             try
             {
@@ -26,15 +27,15 @@ namespace Lykke.Sdk
                 if (string.IsNullOrWhiteSpace(options.AppName))
                     throw new ApplicationException("Application name is required.");
 
-                if (string.IsNullOrWhiteSpace(options.Version))
-                    throw new ApplicationException("Version is required.");
+                if (string.IsNullOrWhiteSpace(options.ApiVersion))
+                    throw new ApplicationException("ApiVersion is required.");
 
-                var appLifetime = (IApplicationLifetime) app.ApplicationServices.GetService(typeof(IApplicationLifetime));
-                var configurationRoot = (IConfigurationRoot) app.ApplicationServices.GetService(typeof(IConfigurationRoot));
-                var monitoringSettings = (IReloadingManager<MonitoringServiceClientSettings>) app.ApplicationServices.GetService(typeof(IReloadingManager<MonitoringServiceClientSettings>));
+                var appLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
+                var configurationRoot = app.ApplicationServices.GetService<IConfigurationRoot>();
+                var monitoringSettings = app.ApplicationServices.GetService<IReloadingManager<MonitoringServiceClientSettings>>();
                 
-                var startupManager = (IStartupManager) app.ApplicationServices.GetService(typeof(IStartupManager));
-                var shutdownManager = (IShutdownManager) app.ApplicationServices.GetService(typeof(IShutdownManager));
+                var startupManager = app.ApplicationServices.GetService<IStartupManager>();
+                var shutdownManager = app.ApplicationServices.GetService<IShutdownManager>();
 
                 appLifetime.ApplicationStarted.Register(() =>
                 {
@@ -74,24 +75,6 @@ namespace Lykke.Sdk
                     }
                 });
 
-                appLifetime.ApplicationStopped.Register(() =>
-                {
-                    try
-                    {
-                        log?.WriteMonitor("StopApplication", null, "Terminating");
-                    }
-                    catch (Exception ex)
-                    {
-                        if (log != null)
-                        {
-                            log.WriteFatalError("CleanUp", "", ex);
-                            (log as IDisposable)?.Dispose();
-                        }
-                        throw;
-                    }
-                });
-
-
                 app.UseLykkeForwardedHeaders();
                 app.UseLykkeMiddleware(options.AppName, ex => new
                 {
@@ -105,7 +88,7 @@ namespace Lykke.Sdk
                 app.UseSwaggerUI(x =>
                 {
                     x.RoutePrefix = "swagger/ui";
-                    x.SwaggerEndpoint($"/swagger/{options.Version}/swagger.json", options.Version);
+                    x.SwaggerEndpoint($"/swagger/{options.ApiVersion}/swagger.json", options.ApiVersion);
                 });
                 app.UseStaticFiles();
             }
