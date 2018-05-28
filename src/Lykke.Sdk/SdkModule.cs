@@ -12,37 +12,38 @@ namespace Lykke.Sdk
     internal class SdkModule<TAppSettings> : Module 
         where TAppSettings : BaseAppSettings
     {
+        private readonly string _logsTableName;
         private readonly IReloadingManager<TAppSettings> _settings;
-        private readonly Func<IReloadingManager<TAppSettings>, IReloadingManager<string>> _logsConnectionStringFactory;
+        private readonly Func<IComponentContext, IReloadingManager<string>> _logsConnectionStringFactory;
         
-        public SdkModule(IReloadingManager<TAppSettings> settings, Func<IReloadingManager<TAppSettings>,IReloadingManager<string>> logsConnectionStringFactory)
+        public SdkModule(IReloadingManager<TAppSettings> settings, Func<IComponentContext, IReloadingManager<string>> logsConnectionStringFactory, string logsTableName)
         {
-            _settings = settings;
-            _logsConnectionStringFactory = logsConnectionStringFactory;
+            _logsTableName = logsTableName ?? throw new ArgumentNullException("logsTableName");
+            _settings = settings ?? throw new ArgumentNullException("settings");
+            _logsConnectionStringFactory = logsConnectionStringFactory ?? throw new ArgumentNullException("logsConnectionStringFactory");
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(ctx => _settings).As<IReloadingManager<TAppSettings>>();
-            
             builder.Register(ctx =>
             {
                 return _settings.Nested(x => x.MonitoringServiceClient);
             })
-            .As<IReloadingManager<MonitoringServiceClientSettings>>();
+            .As<IReloadingManager<MonitoringServiceClientSettings>>().SingleInstance();
 
             builder.Register(ctx =>
                 {
                     return CreateLogWithSlack(
+                        _logsTableName,
                         builder,
-                        _logsConnectionStringFactory(_settings),
+                        _logsConnectionStringFactory(ctx),
                         _settings.Nested(x => x.SlackNotifications).CurrentValue);
                 })
                 .As<ILog>()
                 .SingleInstance();
         }
 
-        private static ILog CreateLogWithSlack(ContainerBuilder builder, IReloadingManager<string> logsConnectionString, SlackNotificationsSettings slackNotificationsSettings)
+        private static ILog CreateLogWithSlack(string logsTableName, ContainerBuilder builder, IReloadingManager<string> logsConnectionString, SlackNotificationsSettings slackNotificationsSettings)
         {
             var consoleLogger = new LogToConsole();
             var aggregateLogger = new AggregateLogger();
@@ -53,7 +54,7 @@ namespace Lykke.Sdk
 
             if (string.IsNullOrEmpty(dbLogConnectionString))
             {
-                consoleLogger.WriteWarningAsync("SdkModule", nameof(CreateLogWithSlack), "Table loggger is not inited").Wait();
+                consoleLogger.WriteWarning("SdkModule", nameof(CreateLogWithSlack), "Table loggger is not inited");
                 return aggregateLogger;
             }
 
@@ -61,7 +62,7 @@ namespace Lykke.Sdk
                 throw new InvalidOperationException($"LogsConnString {dbLogConnectionString} is not filled in settings");
 
             var persistenceManager = new LykkeLogToAzureStoragePersistenceManager(
-                AzureTableStorage<LogEntity>.Create(logsConnectionString, "LykkeServiceLog", consoleLogger),
+                AzureTableStorage<LogEntity>.Create(logsConnectionString, logsTableName, consoleLogger),
                 consoleLogger);
 
             // Creating slack notification service, which logs own azure queue processing messages to aggregate log

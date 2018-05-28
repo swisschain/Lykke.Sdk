@@ -4,6 +4,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Log;
 using JetBrains.Annotations;
+using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
@@ -15,16 +16,42 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeServiceCollectionContainerBuilderExtensions
     {
-        public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services,
-            Func<IReloadingManager<TAppSettings>, IReloadingManager<string>> logsConnectionStringFactory)
+        public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services, Action<LykkeServiceOptions> serviceOptionsBuilder)
             where TAppSettings : BaseAppSettings
         {
+            var serviceOptions = new LykkeServiceOptions();
+            serviceOptionsBuilder(serviceOptions);
+
+            if (string.IsNullOrWhiteSpace(serviceOptions.ApiVersion))
+                throw new ArgumentException("Api version must be provided.");
+
+            if (string.IsNullOrWhiteSpace(serviceOptions.ApiTitle))
+                throw new ArgumentException("Api title must be provided.");
+
+            if (serviceOptions.LogsConnectionStringFactory == null)
+                throw new ArgumentException("Logs connection string factory must be provided.");
+
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ContractResolver =
+                        new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                });
+
+            services.AddSwaggerGen(options =>
+            {
+                options.DefaultLykkeConfiguration(serviceOptions.ApiVersion, serviceOptions.ApiTitle);
+            });
+
             var configurationRoot = new ConfigurationBuilder().AddEnvironmentVariables().Build();
             var settings = configurationRoot.LoadSettings<TAppSettings>();
 
             var builder = new ContainerBuilder();
-            
-            builder.RegisterModule(new SdkModule<TAppSettings>(settings, logsConnectionStringFactory));
+
+            builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
+            builder.RegisterInstance(settings);
+            builder.RegisterInstance(serviceOptions);
+            builder.RegisterModule(new SdkModule<TAppSettings>(settings, serviceOptions.LogsConnectionStringFactory, serviceOptions.LogsTableName));
             builder.RegisterAssemblyModules(Assembly.GetCallingAssembly());
             builder.Populate(services);
 

@@ -17,25 +17,33 @@ namespace Lykke.Sdk
     {
         public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeAppOptions> optionBuilder)
         {
+            var env = app.ApplicationServices.GetService<IHostingEnvironment>();
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseMvc();
+
             var log = app.ApplicationServices.GetService<ILog>();
 
             try
             {
                 var options = new LykkeAppOptions();
                 optionBuilder(options);
-
-                if (string.IsNullOrWhiteSpace(options.AppName))
-                    throw new ApplicationException("Application name is required.");
-
-                if (string.IsNullOrWhiteSpace(options.ApiVersion))
-                    throw new ApplicationException("ApiVersion is required.");
-
+                
                 var appLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
                 var configurationRoot = app.ApplicationServices.GetService<IConfigurationRoot>();
+
+                if (configurationRoot == null)
+                    throw new ApplicationException("Configuration root must be registered in the container");
+
                 var monitoringSettings = app.ApplicationServices.GetService<IReloadingManager<MonitoringServiceClientSettings>>();
                 
                 var startupManager = app.ApplicationServices.GetService<IStartupManager>();
                 var shutdownManager = app.ApplicationServices.GetService<IShutdownManager>();
+                var serviceOptions = app.ApplicationServices.GetService<LykkeServiceOptions>();
 
                 appLifetime.ApplicationStarted.Register(() =>
                 {
@@ -75,8 +83,10 @@ namespace Lykke.Sdk
                     }
                 });
 
+                var appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
+                
                 app.UseLykkeForwardedHeaders();
-                app.UseLykkeMiddleware(options.AppName, ex => new
+                app.UseLykkeMiddleware(appName, ex => new
                 {
                     Message = "Technical problem"
                 });
@@ -88,7 +98,7 @@ namespace Lykke.Sdk
                 app.UseSwaggerUI(x =>
                 {
                     x.RoutePrefix = "swagger/ui";
-                    x.SwaggerEndpoint($"/swagger/{options.ApiVersion}/swagger.json", options.ApiVersion);
+                    x.SwaggerEndpoint($"/swagger/{serviceOptions.ApiVersion}/swagger.json", serviceOptions.ApiVersion);
                 });
                 app.UseStaticFiles();
             }
