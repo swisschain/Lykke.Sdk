@@ -15,8 +15,11 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeApplicationBuilderExtensions
     {
-        public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeAppOptions> optionBuilder)
+        public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeAppOptions> optionsBuilder)
         {
+            if (optionsBuilder == null)
+                throw new ArgumentNullException("optionsBuilder");
+
             var env = app.ApplicationServices.GetService<IHostingEnvironment>();
 
             if (env.IsDevelopment())
@@ -31,7 +34,7 @@ namespace Lykke.Sdk
             try
             {
                 var options = new LykkeAppOptions();
-                optionBuilder(options);
+                optionsBuilder(options);
                 
                 var appLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
                 var configurationRoot = app.ApplicationServices.GetService<IConfigurationRoot>();
