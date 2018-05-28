@@ -15,11 +15,8 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeApplicationBuilderExtensions
     {
-        public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeAppOptions> optionsBuilder)
+        public static void UseLykkeConfiguration(this IApplicationBuilder app)
         {
-            if (optionsBuilder == null)
-                throw new ArgumentNullException("optionsBuilder");
-
             var env = app.ApplicationServices.GetService<IHostingEnvironment>();
 
             if (env.IsDevelopment())
@@ -33,9 +30,6 @@ namespace Lykke.Sdk
 
             try
             {
-                var options = new LykkeAppOptions();
-                optionsBuilder(options);
-                
                 var appLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
                 var configurationRoot = app.ApplicationServices.GetService<IConfigurationRoot>();
 
@@ -47,6 +41,7 @@ namespace Lykke.Sdk
                 var startupManager = app.ApplicationServices.GetService<IStartupManager>();
                 var shutdownManager = app.ApplicationServices.GetService<IShutdownManager>();
                 var serviceOptions = app.ApplicationServices.GetService<LykkeServiceOptions>();
+                var hostingEnvironment = app.ApplicationServices.GetService<IHostingEnvironment>();
 
                 appLifetime.ApplicationStarted.Register(() =>
                 {
@@ -56,7 +51,7 @@ namespace Lykke.Sdk
 
                         log.WriteMonitor("StartApplication", null, "Application started");
 
-                        if (!options.IsDebug)
+                        if (!hostingEnvironment.IsDevelopment())
                         {
                             if (monitoringSettings.CurrentValue == null)
                                 throw new ApplicationException("Monitoring settings is not provided.");
