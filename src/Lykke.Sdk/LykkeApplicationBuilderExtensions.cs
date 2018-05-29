@@ -1,6 +1,7 @@
 ﻿using System;
 using Common.Log;
 using JetBrains.Annotations;
+using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.MonitoringServiceApiCaller;
 using Lykke.Sdk.Settings;
@@ -47,7 +48,7 @@ namespace Lykke.Sdk
                 {
                     try
                     {
-                        startupManager?.StartAsync().GetAwaiter().GetResult();
+                        startupManager?.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
                         log.WriteMonitor("StartApplication", null, "Application started");
 
@@ -71,7 +72,7 @@ namespace Lykke.Sdk
                 {
                     try
                     {
-                        shutdownManager?.StopAsync().GetAwaiter().GetResult();
+                        shutdownManager?.StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                     }
                     catch (Exception ex)
                     {
@@ -84,10 +85,7 @@ namespace Lykke.Sdk
                 var appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
                 
                 app.UseLykkeForwardedHeaders();
-                app.UseLykkeMiddleware(appName, ex => new
-                {
-                    Message = "Technical problem"
-                });
+                app.UseLykkeMiddleware(appName, ex => ErrorResponse.Create("Technical problem"));
 
                 app.UseSwagger(c =>
                 {

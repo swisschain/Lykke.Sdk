@@ -18,9 +18,15 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeServiceCollectionContainerBuilderExtensions
     {
+        /// <summary>
+        /// Build service provider for Lykke's service.
+        /// </summary>        
         public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services, Action<LykkeServiceOptions> serviceOptionsBuilder)
             where TAppSettings : BaseAppSettings
         {
+            if (services == null)
+                throw new ArgumentNullException("services");
+
             var serviceOptions = new LykkeServiceOptions();
             serviceOptionsBuilder(serviceOptions);
 
