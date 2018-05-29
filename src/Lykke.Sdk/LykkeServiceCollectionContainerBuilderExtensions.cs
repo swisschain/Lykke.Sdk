@@ -2,6 +2,7 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Common;
 using Common.Log;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Swagger;
@@ -10,6 +11,7 @@ using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 
 namespace Lykke.Sdk
 {
@@ -50,8 +52,9 @@ namespace Lykke.Sdk
 
             builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
             builder.RegisterInstance(settings);
+            builder.RegisterInstance(JObject.FromObject(settings.CurrentValue));
             builder.RegisterInstance(serviceOptions);
-            builder.RegisterModule(new SdkModule<TAppSettings>(settings, serviceOptions.LogsConnectionStringFactory, serviceOptions.LogsTableName));
+            builder.RegisterModule(new SdkModule(serviceOptions.LogsConnectionStringFactory, serviceOptions.LogsTableName));
             builder.RegisterAssemblyModules(Assembly.GetCallingAssembly());
             builder.Populate(services);
 
@@ -76,9 +79,9 @@ namespace Lykke.Sdk
                         (log as IDisposable)?.Dispose();
                     }
                     throw;
-                }                
+                }
             });
-            
+
             return new AutofacServiceProvider(container);
         }
     }

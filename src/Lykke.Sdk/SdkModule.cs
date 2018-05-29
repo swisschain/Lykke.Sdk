@@ -9,27 +9,21 @@ using Lykke.SlackNotification.AzureQueue;
 
 namespace Lykke.Sdk
 {
-    internal class SdkModule<TAppSettings> : Module 
-        where TAppSettings : BaseAppSettings
+    internal class SdkModule : Module
     {
         private readonly string _logsTableName;
-        private readonly IReloadingManager<TAppSettings> _settings;
         private readonly Func<IComponentContext, IReloadingManager<string>> _logsConnectionStringFactory;
         
-        public SdkModule(IReloadingManager<TAppSettings> settings, Func<IComponentContext, IReloadingManager<string>> logsConnectionStringFactory, string logsTableName)
+        public SdkModule(Func<IComponentContext, IReloadingManager<string>> logsConnectionStringFactory, string logsTableName)
         {
-            _logsTableName = logsTableName ?? throw new ArgumentNullException("logsTableName");
-            _settings = settings ?? throw new ArgumentNullException("settings");
+            _logsTableName = logsTableName ?? throw new ArgumentNullException("logsTableName");            
             _logsConnectionStringFactory = logsConnectionStringFactory ?? throw new ArgumentNullException("logsConnectionStringFactory");
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.Register(ctx =>
-            {
-                return _settings.Nested(x => x.MonitoringServiceClient);
-            })
-            .As<IReloadingManager<MonitoringServiceClientSettings>>().SingleInstance();
+            builder.RegisterSettings<MonitoringServiceClientSettings>("MonitoringServiceClient");
+            builder.RegisterSettings<SlackNotificationsSettings>("SlackNotifications");
 
             builder.Register(ctx =>
                 {
@@ -37,7 +31,7 @@ namespace Lykke.Sdk
                         _logsTableName,
                         builder,
                         _logsConnectionStringFactory(ctx),
-                        _settings.Nested(x => x.SlackNotifications).CurrentValue);
+                        ctx.Resolve<SlackNotificationsSettings>());
                 })
                 .As<ILog>()
                 .SingleInstance();
