@@ -8,7 +8,7 @@ namespace Lykke.Sdk
 {
     public static class AutofacExtensions
     {
-        public static void RegisterAssemblyModules<TAppSettings>(this ContainerBuilder builder, TAppSettings settings, params Assembly[] assemblies)
+        internal static void RegisterAssemblyModules<TAppSettings>(this ContainerBuilder builder, TAppSettings settings, params Assembly[] assemblies)
         {
             if (settings == null)
                 throw new ArgumentNullException("settings");
