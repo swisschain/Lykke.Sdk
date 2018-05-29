@@ -22,9 +22,6 @@ namespace Lykke.Sdk
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterSettings<MonitoringServiceClientSettings>("MonitoringServiceClient");
-            builder.RegisterSettings<SlackNotificationsSettings>("SlackNotifications");
-
             builder.Register(ctx =>
                 {
                     return CreateLogWithSlack(

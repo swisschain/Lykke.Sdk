@@ -56,12 +56,15 @@ namespace Lykke.Sdk
 
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
-            builder.RegisterInstance(settings);
-            builder.RegisterInstance(JObject.FromObject(settings.CurrentValue));
+            builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();            
+            builder.RegisterInstance(settings.CurrentValue.SlackNotifications);
+
+            if (settings.CurrentValue.MonitoringServiceClient != null)
+                builder.RegisterInstance(settings.CurrentValue.MonitoringServiceClient);            
+
             builder.RegisterInstance(serviceOptions);
-            builder.RegisterModule(new SdkModule(serviceOptions.LogsConnectionStringFactory, serviceOptions.LogsTableName));
-            builder.RegisterAssemblyModules(Assembly.GetCallingAssembly());
+            builder.RegisterModule(new SdkModule(serviceOptions.LogsConnectionStringFactory, serviceOptions.LogsTableName));                        
+            builder.RegisterAssemblyModules(settings, Assembly.GetCallingAssembly());
             builder.Populate(services);
 
             var container = builder.Build();
