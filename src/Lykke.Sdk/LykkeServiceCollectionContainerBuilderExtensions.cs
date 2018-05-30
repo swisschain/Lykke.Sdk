@@ -27,6 +27,9 @@ namespace Lykke.Sdk
             if (services == null)
                 throw new ArgumentNullException("services");
 
+            if (serviceOptionsBuilder == null)
+                throw new ArgumentNullException("serviceOptionsBuilder");
+
             var serviceOptions = new LykkeServiceOptions();
             serviceOptionsBuilder(serviceOptions);
 
