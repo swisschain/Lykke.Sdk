@@ -16,8 +16,15 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Configure Lykke service.
+        /// </summary>
+        /// <param name="app"></param>
         public static void UseLykkeConfiguration(this IApplicationBuilder app)
         {
+            if (app == null)
+                throw new ArgumentNullException("app");
+
             var env = app.ApplicationServices.GetService<IHostingEnvironment>();
 
             if (env.IsDevelopment())
