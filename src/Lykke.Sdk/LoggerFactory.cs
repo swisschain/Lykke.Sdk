@@ -9,38 +9,15 @@ using Lykke.SlackNotification.AzureQueue;
 
 namespace Lykke.Sdk
 {
-    internal class SdkModule : Module
+    internal class LoggerFactory
     {
-        private readonly string _logsTableName;
-        private readonly Func<IComponentContext, IReloadingManager<string>> _logsConnectionStringFactory;
-        
-        public SdkModule(Func<IComponentContext, IReloadingManager<string>> logsConnectionStringFactory, string logsTableName)
-        {
-            _logsTableName = logsTableName ?? throw new ArgumentNullException("logsTableName");            
-            _logsConnectionStringFactory = logsConnectionStringFactory ?? throw new ArgumentNullException("logsConnectionStringFactory");
-        }
-
-        protected override void Load(ContainerBuilder builder)
-        {
-            builder.Register(ctx =>
-                {
-                    return CreateLogWithSlack(
-                        _logsTableName,
-                        builder,
-                        _logsConnectionStringFactory(ctx),
-                        ctx.Resolve<SlackNotificationsSettings>());
-                })
-                .As<ILog>()
-                .SingleInstance();
-        }
-
-        private static ILog CreateLogWithSlack(string logsTableName, ContainerBuilder builder, IReloadingManager<string> logsConnectionString, SlackNotificationsSettings slackNotificationsSettings)
+        public static ILog CreateLogWithSlack(ContainerBuilder builder, string logsTableName, IReloadingManager<string> logsConnectionString, SlackNotificationsSettings slackNotificationsSettings)
         {
             var consoleLogger = new LogToConsole();
             var aggregateLogger = new AggregateLogger();
 
             aggregateLogger.AddLog(consoleLogger);
-            
+
             var dbLogConnectionString = logsConnectionString.CurrentValue;
 
             if (string.IsNullOrEmpty(dbLogConnectionString))
@@ -77,5 +54,5 @@ namespace Lykke.Sdk
 
             return aggregateLogger;
         }
-    }    
+    }
 }

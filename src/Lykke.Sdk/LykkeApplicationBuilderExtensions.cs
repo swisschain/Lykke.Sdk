@@ -47,8 +47,7 @@ namespace Lykke.Sdk
                 var monitoringSettings = app.ApplicationServices.GetService<IReloadingManager<MonitoringServiceClientSettings>>();
                 
                 var startupManager = app.ApplicationServices.GetService<IStartupManager>();
-                var shutdownManager = app.ApplicationServices.GetService<IShutdownManager>();
-                var serviceOptions = app.ApplicationServices.GetService<LykkeServiceOptions>();
+                var shutdownManager = app.ApplicationServices.GetService<IShutdownManager>();                
                 var hostingEnvironment = app.ApplicationServices.GetService<IHostingEnvironment>();
 
                 appLifetime.ApplicationStarted.Register(() =>
@@ -101,7 +100,7 @@ namespace Lykke.Sdk
                 app.UseSwaggerUI(x =>
                 {
                     x.RoutePrefix = "swagger/ui";
-                    x.SwaggerEndpoint($"/swagger/{serviceOptions.ApiVersion}/swagger.json", serviceOptions.ApiVersion);
+                    x.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 });
                 app.UseStaticFiles();
             }

@@ -22,7 +22,7 @@ namespace Lykke.Sdk
         /// <summary>
         /// Build service provider for Lykke's service.
         /// </summary>        
-        public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services, Action<LykkeServiceOptions> serviceOptionsBuilder)
+        public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services, Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder)
             where TAppSettings : BaseAppSettings
         {
             if (services == null)
@@ -31,12 +31,9 @@ namespace Lykke.Sdk
             if (serviceOptionsBuilder == null)
                 throw new ArgumentNullException("serviceOptionsBuilder");
 
-            var serviceOptions = new LykkeServiceOptions();
+            var serviceOptions = new LykkeServiceOptions<TAppSettings>();
             serviceOptionsBuilder(serviceOptions);
-
-            if (string.IsNullOrWhiteSpace(serviceOptions.ApiVersion))
-                throw new ArgumentException("Api version must be provided.");
-
+            
             if (string.IsNullOrWhiteSpace(serviceOptions.ApiTitle))
                 throw new ArgumentException("Api title must be provided.");
 
@@ -52,7 +49,7 @@ namespace Lykke.Sdk
 
             services.AddSwaggerGen(options =>
             {
-                options.DefaultLykkeConfiguration(serviceOptions.ApiVersion, serviceOptions.ApiTitle);
+                options.DefaultLykkeConfiguration("v1", serviceOptions.ApiTitle);
             });
 
             var configurationRoot = new ConfigurationBuilder().AddEnvironmentVariables().Build();
@@ -67,29 +64,31 @@ namespace Lykke.Sdk
                 builder.RegisterInstance(settings.CurrentValue.MonitoringServiceClient);            
 
             builder.RegisterInstance(serviceOptions);
-            builder.RegisterModule(new SdkModule(serviceOptions.LogsConnectionStringFactory, serviceOptions.LogsTableName));                        
-            builder.RegisterAssemblyModules(settings, Assembly.GetCallingAssembly());
+
+            var logger = LoggerFactory.CreateLogWithSlack(builder, serviceOptions.LogsTableName, serviceOptions.LogsConnectionStringFactory(settings), settings.CurrentValue.SlackNotifications);
+
+            builder.RegisterInstance(logger);
+            builder.RegisterAssemblyModules(settings, logger, Assembly.GetCallingAssembly());
             builder.Populate(services);
 
             var container = builder.Build();
 
             var appLifetime = container.Resolve<IApplicationLifetime>();
-            var log = container.Resolve<ILog>();
             
             appLifetime.ApplicationStopped.Register(() =>
             {
                 try
                 {
-                    log?.WriteMonitor("StopApplication", null, "Terminating");
+                    logger?.WriteMonitor("StopApplication", null, "Terminating");
 
                     container.Dispose();
                 }
                 catch (Exception ex)
                 {
-                    if (log != null)
+                    if (logger != null)
                     {
-                        log.WriteFatalError("CleanUp", "", ex);
-                        (log as IDisposable)?.Dispose();
+                        logger.WriteFatalError("CleanUp", "", ex);
+                        (logger as IDisposable)?.Dispose();
                     }
                     throw;
                 }
