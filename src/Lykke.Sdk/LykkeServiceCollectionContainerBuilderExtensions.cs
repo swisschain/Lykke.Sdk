@@ -2,7 +2,6 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Common;
 using Common.Log;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Swagger;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 
 namespace Lykke.Sdk
 {
@@ -61,7 +59,7 @@ namespace Lykke.Sdk
             builder.RegisterInstance(settings.CurrentValue.SlackNotifications);
 
             if (settings.CurrentValue.MonitoringServiceClient != null)
-                builder.RegisterInstance(settings.CurrentValue.MonitoringServiceClient);            
+                builder.RegisterInstance(settings.Nested(x => x.MonitoringServiceClient));            
 
             builder.RegisterInstance(serviceOptions);
 
