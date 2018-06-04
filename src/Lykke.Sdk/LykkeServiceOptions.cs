@@ -1,6 +1,4 @@
 ﻿using System;
-using Autofac;
-using Lykke.SettingsReader;
 
 namespace Lykke.Sdk
 {
@@ -10,7 +8,6 @@ namespace Lykke.Sdk
         /// Title for Swagger page
         /// </summary>
         public string ApiTitle { get; set; }        
-        public Func<IReloadingManager<TAppSettings>, IReloadingManager<string>> LogsConnectionStringFactory { get; set; }
-        public string LogsTableName { get; set; }
+        public (string TableName, Func<TAppSettings, string> ConnectionString) Logs { get; set; }
     }
 }

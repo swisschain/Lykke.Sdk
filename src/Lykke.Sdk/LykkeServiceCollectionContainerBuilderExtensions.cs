@@ -35,8 +35,11 @@ namespace Lykke.Sdk
             if (string.IsNullOrWhiteSpace(serviceOptions.ApiTitle))
                 throw new ArgumentException("Api title must be provided.");
 
-            if (serviceOptions.LogsConnectionStringFactory == null)
-                throw new ArgumentException("Logs connection string factory must be provided.");
+            if (string.IsNullOrEmpty(serviceOptions.Logs.TableName))
+                throw new ArgumentException("Logs table name must be provided.");
+
+            if (serviceOptions.Logs.ConnectionString == null)
+                throw new ArgumentException("Logs connection string must be provided.");
 
             services.AddMvc()
                 .AddJsonOptions(options =>
@@ -63,7 +66,12 @@ namespace Lykke.Sdk
 
             builder.RegisterInstance(serviceOptions);
 
-            var logger = LoggerFactory.CreateLogWithSlack(builder, serviceOptions.LogsTableName, serviceOptions.LogsConnectionStringFactory(settings), settings.CurrentValue.SlackNotifications);
+            var logger = LoggerFactory.CreateLogWithSlack(
+                builder, 
+                serviceOptions.Logs.TableName, 
+                settings.ConnectionString(serviceOptions.Logs.ConnectionString), 
+                settings.CurrentValue.SlackNotifications
+            );
 
             builder.RegisterInstance(logger);
             builder.RegisterAssemblyModules(settings, logger, Assembly.GetCallingAssembly());
