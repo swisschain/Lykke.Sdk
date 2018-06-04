@@ -60,7 +60,7 @@ namespace Lykke.Sdk
 
                         if (!hostingEnvironment.IsDevelopment())
                         {
-                            if (monitoringSettings.CurrentValue == null)
+                            if (monitoringSettings?.CurrentValue == null)
                                 throw new ApplicationException("Monitoring settings is not provided.");
 
                             AutoRegistrationInMonitoring.RegisterAsync(configurationRoot, monitoringSettings.CurrentValue.MonitoringServiceUrl, log).GetAwaiter().GetResult();
