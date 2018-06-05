@@ -66,7 +66,7 @@ namespace Lykke.Sdk
             var logger = LoggerFactory.CreateLogWithSlack(builder, serviceOptions.LogsTableName, serviceOptions.LogsConnectionStringFactory(settings), settings.CurrentValue.SlackNotifications);
 
             builder.RegisterInstance(logger);
-            builder.RegisterAssemblyModules(settings, logger, Assembly.GetExecutingAssembly());
+            builder.RegisterAssemblyModules(settings, logger, Assembly.GetEntryAssembly());
             builder.Populate(services);
 
             var container = builder.Build();
