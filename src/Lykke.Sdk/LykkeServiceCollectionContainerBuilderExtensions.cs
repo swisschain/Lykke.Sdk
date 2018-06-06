@@ -74,7 +74,7 @@ namespace Lykke.Sdk
             );
 
             builder.RegisterInstance(logger);
-            builder.RegisterAssemblyModules(settings, logger, Assembly.GetExecutingAssembly());
+            builder.RegisterAssemblyModules(settings, logger, Assembly.GetEntryAssembly());
             builder.Populate(services);
 
             var container = builder.Build();
