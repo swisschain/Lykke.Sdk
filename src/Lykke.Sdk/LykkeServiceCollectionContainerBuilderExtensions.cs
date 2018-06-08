@@ -3,6 +3,7 @@ using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Log;
+using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Sdk.Settings;
@@ -20,7 +21,8 @@ namespace Lykke.Sdk
         /// <summary>
         /// Build service provider for Lykke's service.
         /// </summary>        
-        public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services, Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder)
+        public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services, 
+            Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder)
             where TAppSettings : BaseAppSettings
         {
             if (services == null)
@@ -46,7 +48,8 @@ namespace Lykke.Sdk
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                });
+                })
+                .AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly()));
 
             services.AddSwaggerGen(options =>
             {
