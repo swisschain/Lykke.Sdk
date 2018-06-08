@@ -32,8 +32,6 @@ namespace Lykke.Sdk
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
-
             var log = app.ApplicationServices.GetService<ILog>();
 
             try
@@ -90,8 +88,11 @@ namespace Lykke.Sdk
 
                 var appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
                 
-                app.UseLykkeForwardedHeaders();
                 app.UseLykkeMiddleware(appName, ex => ErrorResponse.Create("Technical problem"));
+                app.UseLykkeForwardedHeaders();
+                
+                app.UseStaticFiles();
+                app.UseMvc();
 
                 app.UseSwagger(c =>
                 {
@@ -102,7 +103,6 @@ namespace Lykke.Sdk
                     x.RoutePrefix = "swagger/ui";
                     x.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 });
-                app.UseStaticFiles();
             }
             catch (Exception ex)
             {
