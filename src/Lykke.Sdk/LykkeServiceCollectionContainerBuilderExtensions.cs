@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Log;
 using FluentValidation.AspNetCore;
@@ -12,6 +10,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Reflection;
 
 namespace Lykke.Sdk
 {
@@ -20,9 +21,22 @@ namespace Lykke.Sdk
     {
         /// <summary>
         /// Build service provider for Lykke's service.
-        /// </summary>        
-        public static IServiceProvider BuildServiceProvider<TAppSettings>(this IServiceCollection services, 
+        /// </summary>
+        public static IServiceProvider BuildServiceProvider<TAppSettings>(
+            this IServiceCollection services,
             Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder)
+            where TAppSettings : BaseAppSettings
+        {
+            return BuildServiceProvider(services, serviceOptionsBuilder, null);
+        }
+
+        /// <summary>
+        /// Build service provider for Lykke's service.
+        /// </summary>
+        public static IServiceProvider BuildServiceProvider<TAppSettings>(
+            this IServiceCollection services,
+            Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder,
+            Action<SwaggerGenOptions> swaggerOptionsConfugure)
             where TAppSettings : BaseAppSettings
         {
             if (services == null)
@@ -33,7 +47,7 @@ namespace Lykke.Sdk
 
             var serviceOptions = new LykkeServiceOptions<TAppSettings>();
             serviceOptionsBuilder(serviceOptions);
-            
+
             if (string.IsNullOrWhiteSpace(serviceOptions.ApiTitle))
                 throw new ArgumentException("Api title must be provided.");
 
@@ -54,6 +68,7 @@ namespace Lykke.Sdk
             services.AddSwaggerGen(options =>
             {
                 options.DefaultLykkeConfiguration("v1", serviceOptions.ApiTitle);
+                swaggerOptionsConfugure?.Invoke(options);
             });
 
             var configurationRoot = new ConfigurationBuilder().AddEnvironmentVariables().Build();
