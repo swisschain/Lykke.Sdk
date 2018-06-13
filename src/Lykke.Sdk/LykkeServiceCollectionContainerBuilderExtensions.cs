@@ -30,10 +30,10 @@ namespace Lykke.Sdk
             return BuildServiceProvider(services, serviceOptionsBuilder, null);
         }
 
-            /// <summary>
-            /// Build service provider for Lykke's service.
-            /// </summary>
-            public static IServiceProvider BuildServiceProvider<TAppSettings>(
+        /// <summary>
+        /// Build service provider for Lykke's service.
+        /// </summary>
+        public static IServiceProvider BuildServiceProvider<TAppSettings>(
             this IServiceCollection services,
             Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder,
             Action<SwaggerGenOptions> swaggerOptionsConfugure)
