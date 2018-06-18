@@ -29,7 +29,7 @@ namespace Lykke.Sdk
         /// Configure Lykke service.
         /// </summary>
         /// <param name="app">IApplicationBuilder implementation.</param>
-        /// <param name="createError">Default error handler.</param>
+        /// <param name="defaultErrorHandler">Default error handler.</param>
         public static void UseLykkeConfiguration(this IApplicationBuilder app, CreateErrorResponse defaultErrorHandler)
         {
             if (app == null)
