@@ -98,7 +98,7 @@ namespace Lykke.Sdk
 
                 var appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
 
-                app.UseLykkeMiddleware(appName, createError != null ? createError : ex => ErrorResponse.Create("Technical problem"));
+                app.UseLykkeMiddleware(appName, defaultErrorHandler != null ? defaultErrorHandler : ex => ErrorResponse.Create("Technical problem"));
                 app.UseLykkeForwardedHeaders();
 
                 app.UseStaticFiles();
