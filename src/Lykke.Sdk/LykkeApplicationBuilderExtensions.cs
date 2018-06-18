@@ -1,7 +1,6 @@
 ﻿using System;
 using Common.Log;
 using JetBrains.Annotations;
-using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.MonitoringServiceApiCaller;
 using Lykke.Sdk.Settings;
@@ -29,11 +28,14 @@ namespace Lykke.Sdk
         /// Configure Lykke service.
         /// </summary>
         /// <param name="app">IApplicationBuilder implementation.</param>
-        /// <param name="defaultErrorHandler">Default error handler.</param>
-        public static void UseLykkeConfiguration(this IApplicationBuilder app, CreateErrorResponse defaultErrorHandler)
+        /// <param name="configureOptions">Configuration handler for <see cref="LykkeConfigurationOptions"/></param>
+        public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeConfigurationOptions> configureOptions)
         {
             if (app == null)
                 throw new ArgumentNullException("app");
+
+            var options = new LykkeConfigurationOptions();
+            configureOptions?.Invoke(options);
 
             var env = app.ApplicationServices.GetService<IHostingEnvironment>();
 
@@ -98,7 +100,7 @@ namespace Lykke.Sdk
 
                 var appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
 
-                app.UseLykkeMiddleware(appName, defaultErrorHandler != null ? defaultErrorHandler : ex => ErrorResponse.Create("Technical problem"));
+                app.UseLykkeMiddleware(appName, options.DefaultErrorHandler);
                 app.UseLykkeForwardedHeaders();
 
                 app.UseStaticFiles();
