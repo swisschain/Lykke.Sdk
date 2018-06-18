@@ -1,7 +1,6 @@
 ﻿using System;
 using Common.Log;
 using JetBrains.Annotations;
-using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.MonitoringServiceApiCaller;
 using Lykke.Sdk.Settings;

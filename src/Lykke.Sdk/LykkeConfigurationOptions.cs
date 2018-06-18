@@ -5,7 +5,7 @@ using Lykke.Common.ApiLibrary.Middleware;
 namespace Lykke.Sdk
 {
     /// <summary>
-    /// Configuration options used in UseLykkeConfiguration extension method.
+    /// Configuration options used in <see cref="LykkeApplicationBuilderExtensions.UseLykkeConfiguration"/> extension method.
     /// </summary>
     [PublicAPI]
     public class LykkeConfigurationOptions
