@@ -29,8 +29,8 @@ namespace Lykke.Sdk
         /// Configure Lykke service.
         /// </summary>
         /// <param name="app">IApplicationBuilder implementation.</param>
-        /// <param name="defaultErrorHandler">Default error handler.</param>
-        public static void UseLykkeConfiguration(this IApplicationBuilder app, CreateErrorResponse defaultErrorHandler)
+        /// <param name="configurationOptions">Configuration options - <see cref="LykkeConfigurationOptions"/>.</param>
+        public static void UseLykkeConfiguration(this IApplicationBuilder app, LykkeConfigurationOptions configurationOptions)
         {
             if (app == null)
                 throw new ArgumentNullException("app");
@@ -98,7 +98,11 @@ namespace Lykke.Sdk
 
                 var appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
 
-                app.UseLykkeMiddleware(appName, defaultErrorHandler != null ? defaultErrorHandler : ex => ErrorResponse.Create("Technical problem"));
+                app.UseLykkeMiddleware(
+                    appName,
+                    configurationOptions?.DefaultErrorHandler != null
+                        ? configurationOptions.DefaultErrorHandler
+                        : ex => ErrorResponse.Create("Technical problem"));
                 app.UseLykkeForwardedHeaders();
 
                 app.UseStaticFiles();
