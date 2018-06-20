@@ -1,13 +1,9 @@
 ﻿using System;
-using Common.Log;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Middleware;
-using Lykke.MonitoringServiceApiCaller;
-using Lykke.Sdk.Settings;
-using Lykke.SettingsReader;
+using Lykke.Common.Log;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lykke.Sdk
@@ -32,7 +28,9 @@ namespace Lykke.Sdk
         public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeConfigurationOptions> configureOptions)
         {
             if (app == null)
-                throw new ArgumentNullException("app");
+            {
+                throw new ArgumentNullException(nameof(app));
+            }
 
             var options = new LykkeConfigurationOptions();
             configureOptions?.Invoke(options);
@@ -44,63 +42,9 @@ namespace Lykke.Sdk
                 app.UseDeveloperExceptionPage();
             }
 
-            var log = app.ApplicationServices.GetService<ILog>();
-
             try
             {
-                var appLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
-                var configurationRoot = app.ApplicationServices.GetService<IConfigurationRoot>();
-
-                if (configurationRoot == null)
-                    throw new ApplicationException("Configuration root must be registered in the container");
-
-                var monitoringSettings = app.ApplicationServices.GetService<IReloadingManager<MonitoringServiceClientSettings>>();
-                
-                var startupManager = app.ApplicationServices.GetService<IStartupManager>();
-                var shutdownManager = app.ApplicationServices.GetService<IShutdownManager>();                
-                var hostingEnvironment = app.ApplicationServices.GetService<IHostingEnvironment>();
-
-                appLifetime.ApplicationStarted.Register(() =>
-                {
-                    try
-                    {
-                        startupManager?.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-
-                        log.WriteMonitor("StartApplication", null, "Application started");
-
-                        if (!hostingEnvironment.IsDevelopment())
-                        {
-                            if (monitoringSettings?.CurrentValue == null)
-                                throw new ApplicationException("Monitoring settings is not provided.");
-
-                            AutoRegistrationInMonitoring.RegisterAsync(configurationRoot, monitoringSettings.CurrentValue.MonitoringServiceUrl, log).GetAwaiter().GetResult();
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        log.WriteFatalError("StartApplication", "", ex);
-                        throw;
-                    }
-                });
-
-                appLifetime.ApplicationStopping.Register(() =>
-                {
-                    try
-                    {
-                        shutdownManager?.StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-                    }
-                    catch (Exception ex)
-                    {
-                        log?.WriteFatalError("StopApplication", "", ex);
-
-                        throw;
-                    }
-                });
-
-                var appName = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
-
-                app.UseLykkeMiddleware(appName, options.DefaultErrorHandler);
+                app.UseLykkeMiddleware(options.DefaultErrorHandler);
                 app.UseLykkeForwardedHeaders();
 
                 app.UseStaticFiles();
@@ -118,7 +62,18 @@ namespace Lykke.Sdk
             }
             catch (Exception ex)
             {
-                log?.WriteFatalError("Startup", "", ex);
+                try
+                {
+                    var log = app.ApplicationServices.GetService<ILogFactory>().CreateLog(typeof(LykkeApplicationBuilderExtensions).FullName);
+
+                    log.Critical(ex);
+                }
+                catch (Exception ex1)
+                {
+                    Console.WriteLine(ex);
+                    Console.WriteLine(ex1);
+                }
+
                 throw;
             }
         }
