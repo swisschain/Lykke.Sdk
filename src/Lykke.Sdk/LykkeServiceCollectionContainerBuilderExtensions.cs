@@ -25,7 +25,7 @@ namespace Lykke.Sdk
             this IServiceCollection services,
             Action<LykkeServiceOptions<TAppSettings>> buildServiceOptions)
 
-            where TAppSettings : BaseAppSettings, IReloadingManager<TAppSettings>
+            where TAppSettings : BaseAppSettings
         {
             if (services == null)
             {
