@@ -48,7 +48,7 @@ namespace Lykke.Sdk
         {
             try
             {
-                _startupManager.StartAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                _startupManager.StartAsync().GetAwaiter().GetResult();
 
                 _healthNotifier.Notify("Application is started");
 
@@ -64,7 +64,6 @@ namespace Lykke.Sdk
 
                 _configurationRoot
                     .RegisterInMonitoringServiceAsync(_monitoringServiceClientSettings.CurrentValue.MonitoringServiceUrl, _healthNotifier)
-                    .ConfigureAwait(false)
                     .GetAwaiter()
                     .GetResult();
 
@@ -80,7 +79,7 @@ namespace Lykke.Sdk
         {
             try
             {
-                _shutdownManager.StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                _shutdownManager.StopAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
