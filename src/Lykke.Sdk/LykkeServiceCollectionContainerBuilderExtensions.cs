@@ -80,7 +80,9 @@ namespace Lykke.Sdk
                 serviceOptions.Swagger?.Invoke(options);
             });
 
-            var configurationRoot = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+            var configurationRoot = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build();
             var settings = configurationRoot.LoadSettings<TAppSettings>();
 
             services.AddLykkeLogging(
@@ -98,11 +100,18 @@ namespace Lykke.Sdk
             builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();            
             builder.RegisterInstance(settings.CurrentValue.SlackNotifications);
 
-            if (settings.CurrentValue.MonitoringServiceClient != null)
-                builder.RegisterInstance(settings.Nested(x => x.MonitoringServiceClient));            
+            if (settings.CurrentValue.MonitoringServiceClient == null)
+            {
+                throw new InvalidOperationException("MonitoringServiceClient config section is required");
+            }
+
+            builder.RegisterInstance(settings.Nested(x => x.MonitoringServiceClient))
+                .As<IReloadingManager<MonitoringServiceClientSettings>>();
 
             builder.RegisterInstance(serviceOptions);
-            builder.RegisterType<AppLifetimeHandler>().AsSelf().SingleInstance();
+            builder.RegisterType<AppLifetimeHandler>()
+                .AsSelf()
+                .SingleInstance();
 
             builder.Populate(services);
             builder.RegisterAssemblyModules(settings, Assembly.GetEntryAssembly());

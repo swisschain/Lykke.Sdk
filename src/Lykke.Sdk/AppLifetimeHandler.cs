@@ -59,7 +59,7 @@ namespace Lykke.Sdk
 
                 if (_monitoringServiceClientSettings?.CurrentValue == null)
                 {
-                    throw new ApplicationException("Monitoring settings is not provided.");
+                    throw new ApplicationException("MonitoringServiceClient settings is not provided.");
                 }
 
                 _configurationRoot
