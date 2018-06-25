@@ -1,18 +1,17 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Common.Log;
 using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Swagger;
-using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Reflection;
+using Lykke.Logs;
+using Lykke.Sdk.Settings;
 
 namespace Lykke.Sdk
 {
@@ -24,38 +23,47 @@ namespace Lykke.Sdk
         /// </summary>
         public static IServiceProvider BuildServiceProvider<TAppSettings>(
             this IServiceCollection services,
-            Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder)
-            where TAppSettings : BaseAppSettings
-        {
-            return BuildServiceProvider(services, serviceOptionsBuilder, null);
-        }
+            Action<LykkeServiceOptions<TAppSettings>> buildServiceOptions)
 
-        /// <summary>
-        /// Build service provider for Lykke's service.
-        /// </summary>
-        public static IServiceProvider BuildServiceProvider<TAppSettings>(
-            this IServiceCollection services,
-            Action<LykkeServiceOptions<TAppSettings>> serviceOptionsBuilder,
-            Action<SwaggerGenOptions> swaggerOptionsConfugure)
             where TAppSettings : BaseAppSettings
         {
             if (services == null)
-                throw new ArgumentNullException("services");
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
-            if (serviceOptionsBuilder == null)
-                throw new ArgumentNullException("serviceOptionsBuilder");
+            if (buildServiceOptions == null)
+            {
+                throw new ArgumentNullException(nameof(buildServiceOptions));
+            }
 
             var serviceOptions = new LykkeServiceOptions<TAppSettings>();
-            serviceOptionsBuilder(serviceOptions);
+
+            buildServiceOptions(serviceOptions);
 
             if (string.IsNullOrWhiteSpace(serviceOptions.ApiTitle))
+            {
                 throw new ArgumentException("Api title must be provided.");
+            }
 
-            if (string.IsNullOrEmpty(serviceOptions.Logs.TableName))
-                throw new ArgumentException("Logs table name must be provided.");
+            if (serviceOptions.Logs == null)
+            {
+                throw new ArgumentException("Logs configuration delegate must be provided.");
+            }
 
-            if (serviceOptions.Logs.ConnectionString == null)
-                throw new ArgumentException("Logs connection string must be provided.");
+            var loggingOptions = new LykkeLoggingOptions<TAppSettings>();
+
+            serviceOptions.Logs(loggingOptions);
+
+            if (string.IsNullOrWhiteSpace(loggingOptions.AzureTableName))
+            {
+                throw new ArgumentException("Logs.AzureTableName must be provided.");
+            }
+
+            if (loggingOptions.AzureTableConnectionStringResolver == null)
+            {
+                throw new ArgumentException("Logs.AzureTableConnectionStringResolver must be provided");
+            }
 
             services.AddMvc()
                 .AddJsonOptions(options =>
@@ -68,11 +76,22 @@ namespace Lykke.Sdk
             services.AddSwaggerGen(options =>
             {
                 options.DefaultLykkeConfiguration("v1", serviceOptions.ApiTitle);
-                swaggerOptionsConfugure?.Invoke(options);
+
+                serviceOptions.Swagger?.Invoke(options);
             });
 
             var configurationRoot = new ConfigurationBuilder().AddEnvironmentVariables().Build();
             var settings = configurationRoot.LoadSettings<TAppSettings>();
+
+            services.AddLykkeLogging(
+                settings.ConnectionString(loggingOptions.AzureTableConnectionStringResolver),
+                loggingOptions.AzureTableName,
+                settings.CurrentValue.SlackNotifications.AzureQueue.ConnectionString,
+                settings.CurrentValue.SlackNotifications.AzureQueue.QueueName,
+                options =>
+                {
+                    loggingOptions.Extended?.Invoke(options);
+                });
 
             var builder = new ContainerBuilder();
 
@@ -83,40 +102,18 @@ namespace Lykke.Sdk
                 builder.RegisterInstance(settings.Nested(x => x.MonitoringServiceClient));            
 
             builder.RegisterInstance(serviceOptions);
+            builder.RegisterType<AppLifetimeHandler>().AsSelf().SingleInstance();
 
-            var logger = LoggerFactory.CreateLogWithSlack(
-                builder, 
-                serviceOptions.Logs.TableName, 
-                settings.ConnectionString(serviceOptions.Logs.ConnectionString), 
-                settings.CurrentValue.SlackNotifications
-            );
-
-            builder.RegisterInstance(logger);
             builder.Populate(services);
-            builder.RegisterAssemblyModules(settings, logger, Assembly.GetEntryAssembly());
+            builder.RegisterAssemblyModules(settings, Assembly.GetEntryAssembly());
 
             var container = builder.Build();
 
             var appLifetime = container.Resolve<IApplicationLifetime>();
-            
-            appLifetime.ApplicationStopped.Register(() =>
-            {
-                try
-                {
-                    logger?.WriteMonitor("StopApplication", null, "Terminating");
 
-                    container.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    if (logger != null)
-                    {
-                        logger.WriteFatalError("CleanUp", "", ex);
-                        (logger as IDisposable)?.Dispose();
-                    }
-                    throw;
-                }
-            });
+            appLifetime.ApplicationStarted.Register(container.Resolve<AppLifetimeHandler>().HandleStarted);
+            appLifetime.ApplicationStopping.Register(container.Resolve<AppLifetimeHandler>().HandleStopping);
+            appLifetime.ApplicationStopped.Register(() => container.Resolve<AppLifetimeHandler>().HandleStopped(container));
 
             return new AutofacServiceProvider(container);
         }

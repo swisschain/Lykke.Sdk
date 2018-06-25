@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
-using Common.Log;
 using Lykke.SettingsReader;
 
 namespace Lykke.Sdk
 {
     public static class AutofacExtensions
     {
-        internal static void RegisterAssemblyModules<TAppSettings>(this ContainerBuilder builder, IReloadingManager<TAppSettings> settings, ILog logger, params Assembly[] assemblies)
+        internal static void RegisterAssemblyModules<TAppSettings>(this ContainerBuilder builder, IReloadingManager<TAppSettings> settings, params Assembly[] assemblies)
         {
             if (settings == null)
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
 
             if (assemblies == null)
-                throw new ArgumentNullException("assemblies");
+                throw new ArgumentNullException(nameof(assemblies));
 
             var moduleType = typeof(Autofac.Module);
             var internalBuilder = new ContainerBuilder();
@@ -25,7 +24,6 @@ namespace Lykke.Sdk
                 .RegisterAssemblyTypes(assemblies)
                 .Where(t => moduleType.GetTypeInfo().IsAssignableFrom(t.GetTypeInfo()))
                 .WithParameter(TypedParameter.From(settings))
-                .WithParameter(TypedParameter.From(logger))
                 .As<IModule>();
 
             using (var ctx = internalBuilder.Build())
