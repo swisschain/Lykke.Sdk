@@ -107,6 +107,16 @@ namespace Lykke.Sdk
             builder.Populate(services);
             builder.RegisterAssemblyModules(settings, Assembly.GetEntryAssembly());
 
+            builder.RegisterType<EmptyStartupManager>()
+                .As<IStartupManager>()
+                .SingleInstance()
+                .IfNotRegistered(typeof(IStartupManager));
+
+            builder.RegisterType<EmptyShutdownManager>()
+                .As<IShutdownManager>()
+                .SingleInstance()
+                .IfNotRegistered(typeof(IShutdownManager));
+
             var container = builder.Build();
 
             var appLifetime = container.Resolve<IApplicationLifetime>();
