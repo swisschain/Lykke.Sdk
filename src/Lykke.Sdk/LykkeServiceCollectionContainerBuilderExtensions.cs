@@ -11,6 +11,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Reflection;
 using Lykke.Logs;
+using Lykke.Sdk.ActionFilters;
 using Lykke.Sdk.Settings;
 
 namespace Lykke.Sdk
@@ -65,7 +66,7 @@ namespace Lykke.Sdk
                 throw new ArgumentException("Logs.AzureTableConnectionStringResolver must be provided");
             }
 
-            services.AddMvc()
+            services.AddMvc(options => options.Filters.Add(new ActionValidationFilter()))
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
