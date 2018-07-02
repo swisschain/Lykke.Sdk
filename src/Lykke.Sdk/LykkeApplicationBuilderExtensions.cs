@@ -45,6 +45,7 @@ namespace Lykke.Sdk
             try
             {
                 app.UseLykkeMiddleware(options.DefaultErrorHandler);
+                app.UseMiddleware<ClientServiceApiExceptionMiddleware>();
                 app.UseLykkeForwardedHeaders();
 
                 app.UseStaticFiles();
