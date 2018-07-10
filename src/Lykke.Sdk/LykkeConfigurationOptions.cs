@@ -13,9 +13,13 @@ namespace Lykke.Sdk
         /// <summary>Default error handler.</summary>
         public CreateErrorResponse DefaultErrorHandler { get; set; }
 
+        /// <summary>Lykke swagger options</summary>
+        public LykkeSwaggerOptions SwaggerOptions { get; set; }
+
         internal LykkeConfigurationOptions()
         {
             DefaultErrorHandler = ex => ErrorResponse.Create("Technical problem");
+            SwaggerOptions = new LykkeSwaggerOptions();
         }
     }
 }

@@ -42,9 +42,9 @@ namespace Lykke.Sdk
 
             buildServiceOptions(serviceOptions);
 
-            if (string.IsNullOrWhiteSpace(serviceOptions.ApiTitle))
+            if (serviceOptions.SwaggerOptions == null)
             {
-                throw new ArgumentException("Api title must be provided.");
+                throw new ArgumentException("Swagger options must be provided.");
             }
 
             if (serviceOptions.Logs == null)
@@ -76,7 +76,9 @@ namespace Lykke.Sdk
 
             services.AddSwaggerGen(options =>
             {
-                options.DefaultLykkeConfiguration("v1", serviceOptions.ApiTitle);
+                options.DefaultLykkeConfiguration(
+                    serviceOptions.SwaggerOptions.ApiVersion ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"), 
+                    serviceOptions.SwaggerOptions.ApiTitle ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiTitle)}"));
 
                 serviceOptions.Swagger?.Invoke(options);
             });
