@@ -58,11 +58,11 @@ namespace Lykke.Sdk
                 app.UseSwaggerUI(x =>
                 {
                     x.RoutePrefix = "swagger/ui";
-                    x.SwaggerEndpoint("/swagger/v1/swagger.json", options.ApiVersion);
+                    x.SwaggerEndpoint("/swagger/v1/swagger.json", options.SwaggerOptions.ApiVersion);
 
-                    if (!string.IsNullOrWhiteSpace(options.SwaggerDocumentTitle))
+                    if (!string.IsNullOrWhiteSpace(options.SwaggerOptions.ApiTitle))
                     {
-                        x.DocumentTitle(options.SwaggerDocumentTitle);
+                        x.DocumentTitle(options.SwaggerOptions.ApiTitle);
                     }
                 });
             }

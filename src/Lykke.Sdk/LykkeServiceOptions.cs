@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -8,13 +9,15 @@ namespace Lykke.Sdk
     public class LykkeServiceOptions<TAppSettings>
     {
         /// <summary>
-        /// Title for Swagger page. Required
+        /// Swagger Options. Required
         /// </summary>
-        public string ApiTitle { get; set; }
+        [Required]
+        public LykkeSwaggerOptions SwaggerOptions { get; set; }
 
         /// <summary>
         /// Logging configuration delegate. Required.
         /// </summary>
+        [Required]
         public Action<LykkeLoggingOptions<TAppSettings>> Logs { get; set; }
 
         /// <summary>
