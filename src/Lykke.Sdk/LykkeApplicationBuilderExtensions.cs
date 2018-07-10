@@ -58,7 +58,12 @@ namespace Lykke.Sdk
                 app.UseSwaggerUI(x =>
                 {
                     x.RoutePrefix = "swagger/ui";
-                    x.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                    x.SwaggerEndpoint("/swagger/v1/swagger.json", options.ApiVersion);
+
+                    if (!string.IsNullOrWhiteSpace(options.SwaggerDocumentTitle))
+                    {
+                        x.DocumentTitle(options.SwaggerDocumentTitle);
+                    }
                 });
             }
             catch (Exception ex)
@@ -78,5 +83,5 @@ namespace Lykke.Sdk
                 throw;
             }
         }
-    }    
+    }
 }
