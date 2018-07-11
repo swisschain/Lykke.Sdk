@@ -7,9 +7,12 @@ using Lykke.SettingsReader;
 
 namespace Lykke.Sdk
 {
-    public static class AutofacExtensions
+    internal static class AutofacExtensions
     {
-        internal static void RegisterAssemblyModules<TAppSettings>(this ContainerBuilder builder, IReloadingManager<TAppSettings> settings, params Assembly[] assemblies)
+        internal static void RegisterAssemblyModules<TAppSettings>(this ContainerBuilder builder,
+            IReloadingManager<TAppSettings> settings,
+            Action<IModuleRegistration> additionalModules, 
+            params Assembly[] assemblies)
         {
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
@@ -33,6 +36,45 @@ namespace Lykke.Sdk
                     builder.RegisterModule(module);
                 }
             }
+
+            if (additionalModules != null)
+            {
+                var registration = new ModuleRegistration<TAppSettings>(settings);
+
+                additionalModules.Invoke(registration);
+
+                using (var ctx = registration.InterBuilder.Build())
+                {
+                    foreach (var module in ctx.Resolve<IEnumerable<IModule>>())
+                    {
+                        builder.RegisterModule(module);
+                    }
+                }
+            }
+        }
+
+        private class ModuleRegistration<TAppSettings> : IModuleRegistration
+        {
+            private readonly IReloadingManager<TAppSettings> _settings;
+
+            public ModuleRegistration(IReloadingManager<TAppSettings> settings)
+            {
+                _settings = settings;
+                InterBuilder = new ContainerBuilder();
+            }
+
+            public IModuleRegistration RegisterModule<TModule>() 
+                where TModule : IModule
+            {
+                InterBuilder
+                    .RegisterType<TModule>()
+                    .WithParameter(TypedParameter.From(_settings))
+                    .As<IModule>();
+
+                return this;
+            }
+
+            public ContainerBuilder InterBuilder { get;  }
         }
     }
 }
