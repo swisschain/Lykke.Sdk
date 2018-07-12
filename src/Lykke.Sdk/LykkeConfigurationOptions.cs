@@ -1,6 +1,8 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Middleware;
+using Microsoft.AspNetCore.Builder;
 
 namespace Lykke.Sdk
 {
@@ -16,10 +18,14 @@ namespace Lykke.Sdk
         /// <summary>Lykke swagger options</summary>
         public LykkeSwaggerOptions SwaggerOptions { get; set; }
 
+        /// <summary>Additional middleware</summary>
+        public Action<IApplicationBuilder> WithMiddleware { get; set; }
+
         internal LykkeConfigurationOptions()
         {
             DefaultErrorHandler = ex => ErrorResponse.Create("Technical problem");
             SwaggerOptions = new LykkeSwaggerOptions();
         }
+
     }
 }

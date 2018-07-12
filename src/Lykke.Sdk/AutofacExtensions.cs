@@ -11,7 +11,7 @@ namespace Lykke.Sdk
     {
         internal static void RegisterAssemblyModules<TAppSettings>(this ContainerBuilder builder,
             IReloadingManager<TAppSettings> settings,
-            Action<IModuleRegistration> additionalModules, 
+            Action<IModuleRegistration> additionalModules,
             params Assembly[] assemblies)
         {
             if (settings == null)
@@ -29,6 +29,18 @@ namespace Lykke.Sdk
                 .WithParameter(TypedParameter.From(settings))
                 .As<IModule>();
 
+            if (additionalModules != null)
+            {
+                var registration = new ModuleRegistration<TAppSettings>(settings, internalBuilder);
+
+                additionalModules.Invoke(registration);
+            }
+
+            LoadModules(builder, internalBuilder);
+        }
+
+        private static void LoadModules(ContainerBuilder builder, ContainerBuilder internalBuilder)
+        {
             using (var ctx = internalBuilder.Build())
             {
                 foreach (var module in ctx.Resolve<IEnumerable<IModule>>())
@@ -36,45 +48,29 @@ namespace Lykke.Sdk
                     builder.RegisterModule(module);
                 }
             }
-
-            if (additionalModules != null)
-            {
-                var registration = new ModuleRegistration<TAppSettings>(settings);
-
-                additionalModules.Invoke(registration);
-
-                using (var ctx = registration.InterBuilder.Build())
-                {
-                    foreach (var module in ctx.Resolve<IEnumerable<IModule>>())
-                    {
-                        builder.RegisterModule(module);
-                    }
-                }
-            }
         }
 
         private class ModuleRegistration<TAppSettings> : IModuleRegistration
         {
             private readonly IReloadingManager<TAppSettings> _settings;
+            private readonly ContainerBuilder _internalBuilder;
 
-            public ModuleRegistration(IReloadingManager<TAppSettings> settings)
+            public ModuleRegistration(IReloadingManager<TAppSettings> settings, ContainerBuilder internalBuilder)
             {
                 _settings = settings;
-                InterBuilder = new ContainerBuilder();
+                _internalBuilder = internalBuilder;
             }
 
-            public IModuleRegistration RegisterModule<TModule>() 
+            public IModuleRegistration RegisterModule<TModule>()
                 where TModule : IModule
             {
-                InterBuilder
+                _internalBuilder
                     .RegisterType<TModule>()
                     .WithParameter(TypedParameter.From(_settings))
                     .As<IModule>();
 
                 return this;
             }
-
-            public ContainerBuilder InterBuilder { get;  }
         }
     }
 }
