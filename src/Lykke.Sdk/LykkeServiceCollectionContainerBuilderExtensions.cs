@@ -103,8 +103,6 @@ namespace Lykke.Sdk
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
-            builder.RegisterInstance(settings).As<IReloadingManager<TAppSettings>>();
-            builder.Register(x => x.Resolve<IReloadingManager<TAppSettings>>().CurrentValue).As<TAppSettings>();
 
             builder.RegisterInstance(settings.CurrentValue.SlackNotifications);
 

@@ -14,11 +14,6 @@ namespace Lykke.Sdk
     public static class LykkeStarter
     {
         /// <summary>
-        /// Gets the environment information (pod name).
-        /// </summary>
-        public static string EnvInfo => Environment.GetEnvironmentVariable("ENV_INFO") ?? Environment.MachineName;
-
-        /// <summary>
         /// Starts the service.
         /// </summary>
         /// <typeparam name="TStartup">The type of the startup.</typeparam>
@@ -27,7 +22,7 @@ namespace Lykke.Sdk
             where TStartup : class
         {
             Console.WriteLine($@"{componentName} version {
-                    Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion
+                    Common.AppEnvironment.Version
                 }");
 
             if (Debugger.IsAttached)
@@ -39,7 +34,7 @@ namespace Lykke.Sdk
                 Console.WriteLine(@"Is RELEASE");
             }
 
-            Console.WriteLine($@"ENV_INFO: {EnvInfo}");
+            Console.WriteLine($@"ENV_INFO: {Common.AppEnvironment.EnvInfo}");
 
             try
             {
