@@ -3,12 +3,21 @@ using Lykke.SettingsReader.Attributes;
 
 namespace Lykke.Sdk.Settings
 {
+    /// <summary>
+    /// Azure queue publication settings
+    /// </summary>
     [PublicAPI]
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class AzureQueuePublicationSettings
     {
-        [AzureQueueCheck]        
-        public string ConnectionString { get; set; }        
+        /// <summary>
+        /// The azure connection string.
+        /// </summary>
+        [AzureQueueCheck]
+        public string ConnectionString { get; set; }
+
+        /// <summary>
+        /// The azure queue name.
+        /// </summary>
         public string QueueName { get; set; }
     }
 }

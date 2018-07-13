@@ -1,21 +1,24 @@
-﻿using Autofac;
+﻿using System;
+using System.Reflection;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Swagger;
+using Lykke.Logs;
+using Lykke.Sdk.ActionFilters;
+using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Reflection;
-using Lykke.Logs;
-using Lykke.Sdk.ActionFilters;
-using Lykke.Sdk.Settings;
 
 namespace Lykke.Sdk
 {
+    /// <summary>
+    /// Extension methods for <see cref="IServiceCollection"/> class.
+    /// </summary>
     [PublicAPI]
     public static class LykkeServiceCollectionContainerBuilderExtensions
     {
@@ -77,7 +80,7 @@ namespace Lykke.Sdk
             services.AddSwaggerGen(options =>
             {
                 options.DefaultLykkeConfiguration(
-                    serviceOptions.SwaggerOptions.ApiVersion ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"), 
+                    serviceOptions.SwaggerOptions.ApiVersion ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"),
                     serviceOptions.SwaggerOptions.ApiTitle ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiTitle)}"));
 
                 serviceOptions.Swagger?.Invoke(options);
@@ -98,9 +101,12 @@ namespace Lykke.Sdk
                     loggingOptions.Extended?.Invoke(options);
                 });
 
+            serviceOptions.Extend?.Invoke(services, settings);
+
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();            
+            builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
+
             builder.RegisterInstance(settings.CurrentValue.SlackNotifications);
 
             if (settings.CurrentValue.MonitoringServiceClient == null)
@@ -117,7 +123,7 @@ namespace Lykke.Sdk
                 .SingleInstance();
 
             builder.Populate(services);
-            builder.RegisterAssemblyModules(settings, Assembly.GetEntryAssembly());
+            builder.RegisterAssemblyModules(settings, serviceOptions.RegisterAdditionalModules, Assembly.GetEntryAssembly());
 
             builder.RegisterType<EmptyStartupManager>()
                 .As<IStartupManager>()

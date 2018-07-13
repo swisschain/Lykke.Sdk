@@ -4,6 +4,10 @@ using Lykke.Logs;
 
 namespace Lykke.Sdk
 {
+    /// <summary>
+    /// Lykke logging options class.
+    /// </summary>
+    /// <typeparam name="TAppSettings">The type of the application settings.</typeparam>
     [PublicAPI]
     public class LykkeLoggingOptions<TAppSettings>
     {

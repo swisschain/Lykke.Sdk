@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Lykke.Sdk
 {
+    /// <summary>
+    /// Extension methods for <see cref="IApplicationBuilder"/> class.
+    /// </summary>
     [PublicAPI]
     public static class LykkeApplicationBuilderExtensions
     {
@@ -15,17 +18,15 @@ namespace Lykke.Sdk
         /// Configure Lykke service.
         /// </summary>
         /// <param name="app"></param>
-        public static void UseLykkeConfiguration(this IApplicationBuilder app)
-        {
-            app.UseLykkeConfiguration(null);
-        }
+        public static IApplicationBuilder UseLykkeConfiguration(this IApplicationBuilder app)
+            => app.UseLykkeConfiguration(null);
 
         /// <summary>
         /// Configure Lykke service.
         /// </summary>
         /// <param name="app">IApplicationBuilder implementation.</param>
         /// <param name="configureOptions">Configuration handler for <see cref="LykkeConfigurationOptions"/></param>
-        public static void UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeConfigurationOptions> configureOptions)
+        public static IApplicationBuilder UseLykkeConfiguration(this IApplicationBuilder app, Action<LykkeConfigurationOptions> configureOptions)
         {
             if (app == null)
             {
@@ -47,6 +48,9 @@ namespace Lykke.Sdk
                 app.UseLykkeMiddleware(options.DefaultErrorHandler);
                 app.UseMiddleware<ClientServiceApiExceptionMiddleware>();
                 app.UseLykkeForwardedHeaders();
+
+                // Middleware like authentication needs to be registered before Mvc
+                options.WithMiddleware?.Invoke(app);
 
                 app.UseStaticFiles();
                 app.UseMvc();
@@ -82,6 +86,8 @@ namespace Lykke.Sdk
 
                 throw;
             }
+
+            return app;
         }
     }
 }

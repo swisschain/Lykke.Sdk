@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Lykke.Sdk.ActionFilters
 {
-    public class ActionValidationFilter : IActionFilter
+    internal class ActionValidationFilter : IActionFilter
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
