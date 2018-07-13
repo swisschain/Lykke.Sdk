@@ -29,10 +29,4 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="7.6.104" />
   </ItemGroup>
 
-  <ItemGroup Label="dotnet pack instructions">
-    <Content Include="$(OutputPath)$(AssemblyName).pdb">
-      <Pack>true</Pack>
-      <PackagePath>lib/netstandard2.0</PackagePath>
-    </Content>
-  </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 ﻿using Autofac.Core;
+using JetBrains.Annotations;
 using Lykke.SettingsReader;
 
 namespace Lykke.Sdk
@@ -7,6 +8,7 @@ namespace Lykke.Sdk
     /// Fluent interface for registration of additional autofac modules outside the entry assembly.
     /// </summary>
     /// <remarks>Modules in the entry assembly are loaded automatically</remarks>
+    [PublicAPI]
     public interface IModuleRegistration
     {
         /// <summary>

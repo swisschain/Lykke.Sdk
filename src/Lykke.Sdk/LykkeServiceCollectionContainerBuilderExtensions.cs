@@ -16,6 +16,9 @@ using Newtonsoft.Json.Converters;
 
 namespace Lykke.Sdk
 {
+    /// <summary>
+    /// Extension methods for <see cref="IServiceCollection"/> class.
+    /// </summary>
     [PublicAPI]
     public static class LykkeServiceCollectionContainerBuilderExtensions
     {

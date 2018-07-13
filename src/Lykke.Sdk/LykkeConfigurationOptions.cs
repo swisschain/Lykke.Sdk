@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 namespace Lykke.Sdk
 {
     /// <summary>
-    /// Configuration options used in <see cref="LykkeApplicationBuilderExtensions.UseLykkeConfiguration"/> extension method.
+    /// Configuration options used in UseLykkeConfiguration extension method.
     /// </summary>
     [PublicAPI]
     public class LykkeConfigurationOptions

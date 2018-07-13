@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Lykke.Sdk
 {
+    /// <summary>
+    /// Extension methods for <see cref="IApplicationBuilder"/> class.
+    /// </summary>
     [PublicAPI]
     public static class LykkeApplicationBuilderExtensions
     {
