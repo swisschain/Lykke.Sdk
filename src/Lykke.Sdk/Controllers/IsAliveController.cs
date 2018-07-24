@@ -1,8 +1,10 @@
 ﻿using Lykke.Common;
 using Lykke.Common.Api.Contract.Responses;
+using Lykke.Sdk.Health;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Diagnostics;
+using System.Linq;
 using System.Net;
 
 namespace Lykke.Sdk.Controllers
@@ -14,6 +16,16 @@ namespace Lykke.Sdk.Controllers
     [Route("api/[controller]")]
     public class IsAliveController : Controller
     {
+        private readonly IHealthService _healthService;
+        private readonly bool _isDebug;
+
+        /// <summary>C-tor</summary>
+        public IsAliveController(IHealthService healthService, IHostingEnvironment hostingEnvironment)
+        {
+            _healthService = healthService;
+            _isDebug = hostingEnvironment.IsDevelopment();
+        }
+
         /// <summary>
         /// Checks service is alive
         /// </summary>
@@ -22,14 +34,16 @@ namespace Lykke.Sdk.Controllers
         [ProducesResponseType(typeof(IsAliveResponse), (int)HttpStatusCode.OK)]
         public IActionResult Get()
         {
-            // NOTE: Feel free to extend IsAliveResponse, to display job-specific indicators
-            return Ok(new IsAliveResponse
-            {
-                Name = AppEnvironment.Name,
-                Version = AppEnvironment.Version,
-                Env = AppEnvironment.EnvInfo,
-                IsDebug = Debugger.IsAttached,
-            });
+            return Ok(
+                new IsAliveResponse
+                {
+                    Name = AppEnvironment.Name,
+                    Version = AppEnvironment.Version,
+                    Env = AppEnvironment.EnvInfo,
+                    IsDebug = _isDebug,
+                    IssueIndicators = _healthService.GetHealthIssues()
+                        .Select(i => new IsAliveResponse.IssueIndicator { Type = i.Type, Value = i.Value }),
+                });
         }
     }
 }

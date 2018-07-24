@@ -8,6 +8,7 @@ using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Sdk.ActionFilters;
 using Lykke.Sdk.Controllers;
+using Lykke.Sdk.Health;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
@@ -125,9 +126,6 @@ namespace Lykke.Sdk
                 .AsSelf()
                 .SingleInstance();
 
-            builder.Populate(services);
-            builder.RegisterAssemblyModules(settings, serviceOptions.RegisterAdditionalModules, Assembly.GetEntryAssembly());
-
             builder.RegisterType<EmptyStartupManager>()
                 .As<IStartupManager>()
                 .SingleInstance()
@@ -137,6 +135,14 @@ namespace Lykke.Sdk
                 .As<IShutdownManager>()
                 .SingleInstance()
                 .IfNotRegistered(typeof(IShutdownManager));
+
+            builder.RegisterType<HealthService>()
+                .As<IHealthService>()
+                .SingleInstance()
+                .IfNotRegistered(typeof(IHealthService));
+
+            builder.Populate(services);
+            builder.RegisterAssemblyModules(settings, serviceOptions.RegisterAdditionalModules, Assembly.GetEntryAssembly());
 
             var container = builder.Build();
 
