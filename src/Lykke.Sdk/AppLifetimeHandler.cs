@@ -6,10 +6,8 @@ using Lykke.MonitoringServiceApiCaller;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Diagnostics;
 
 namespace Lykke.Sdk
 {
@@ -68,9 +66,6 @@ namespace Lykke.Sdk
                     .RegisterInMonitoringServiceAsync(_monitoringServiceClientSettings.CurrentValue.MonitoringServiceUrl, _healthNotifier)
                     .GetAwaiter()
                     .GetResult();
-
-                if (Debugger.IsAttached)
-                    TelemetryConfiguration.Active.DisableTelemetry = true;
             }
             catch (Exception ex)
             {

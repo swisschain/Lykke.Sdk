@@ -2,6 +2,7 @@
 using Lykke.Common;
 using Microsoft.AspNetCore.Hosting;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -39,13 +40,16 @@ namespace Lykke.Sdk
 
             try
             {
-                var host = new WebHostBuilder()
+                var hostBuilder = new WebHostBuilder()
                     .UseKestrel()
                     .UseUrls($"http://*:{port}")
                     .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<TStartup>()
-                    .UseApplicationInsights()
-                    .Build();
+                    .UseStartup<TStartup>();
+
+                if (!Debugger.IsAttached)
+                    hostBuilder = hostBuilder.UseApplicationInsights();
+
+                var host = hostBuilder.Build();
 
                 await host.RunAsync();
             }
