@@ -126,6 +126,9 @@ namespace Lykke.Sdk
                 .AsSelf()
                 .SingleInstance();
 
+            builder.Populate(services);
+            builder.RegisterAssemblyModules(settings, serviceOptions.RegisterAdditionalModules, Assembly.GetEntryAssembly());
+
             builder.RegisterType<EmptyStartupManager>()
                 .As<IStartupManager>()
                 .SingleInstance()
@@ -140,9 +143,6 @@ namespace Lykke.Sdk
                 .As<IHealthService>()
                 .SingleInstance()
                 .IfNotRegistered(typeof(IHealthService));
-
-            builder.Populate(services);
-            builder.RegisterAssemblyModules(settings, serviceOptions.RegisterAdditionalModules, Assembly.GetEntryAssembly());
 
             var container = builder.Build();
 
