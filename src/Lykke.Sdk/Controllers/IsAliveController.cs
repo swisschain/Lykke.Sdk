@@ -2,7 +2,6 @@
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Sdk.Health;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Linq;
 using System.Net;
@@ -20,10 +19,10 @@ namespace Lykke.Sdk.Controllers
         private readonly bool _isDebug;
 
         /// <summary>C-tor</summary>
-        public IsAliveController(IHealthService healthService, IHostingEnvironment hostingEnvironment)
+        public IsAliveController(IHealthService healthService)
         {
             _healthService = healthService;
-            _isDebug = hostingEnvironment.IsDevelopment();
+            _isDebug = LykkeStarter.IsDebug;
         }
 
         /// <summary>

@@ -14,9 +14,10 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeStarter
     {
-        /// <summary>
-        /// Starts the service.
-        /// </summary>
+        /// <summary>DEBUG/RELEASE mode flag.</summary>
+        public static bool IsDebug { get; private set; }
+
+        /// <summary>Starts the service.</summary>
         /// <typeparam name="TStartup">The type of the startup.</typeparam>
         /// <param name="isDebug">DEBUG/RELEASE mode flag</param>
         public static Task Start<TStartup>(bool isDebug)
@@ -25,15 +26,15 @@ namespace Lykke.Sdk
             return Start<TStartup>(isDebug, 5000);
         }
 
-        /// <summary>
-        /// Starts the service.
-        /// </summary>
+        /// <summary>Starts the service listening to provided port.</summary>
         /// <typeparam name="TStartup">The type of the startup.</typeparam>
         /// <param name="port">Port that the app is listening to.</param>
         /// /// <param name="isDebug">DEBUG/RELEASE mode flag</param>
         public static async Task Start<TStartup>(bool isDebug, int port)
             where TStartup : class
         {
+            IsDebug = isDebug;
+
             Console.WriteLine($@"{AppEnvironment.Name} version {AppEnvironment.Version}");
             Console.WriteLine(isDebug ? "DEBUG mode" : "RELEASE mode");
             Console.WriteLine($@"ENV_INFO: {AppEnvironment.EnvInfo}");
