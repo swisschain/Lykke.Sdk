@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Sdk.ActionFilters;
+using Lykke.Sdk.Controllers;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
@@ -76,6 +77,8 @@ namespace Lykke.Sdk
                     options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 })
                 .AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly()));
+
+            services.AddTransient<IsAliveController>();
 
             services.AddSwaggerGen(options =>
             {

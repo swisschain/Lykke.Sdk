@@ -1,9 +1,10 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using Lykke.Common;
+using Microsoft.AspNetCore.Hosting;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Lykke.Sdk
 {
@@ -17,30 +18,41 @@ namespace Lykke.Sdk
         /// Starts the service.
         /// </summary>
         /// <typeparam name="TStartup">The type of the startup.</typeparam>
-        /// <param name="componentName">Name of the component.</param>
-        public static async Task Start<TStartup>(string componentName)
+        public static Task Start<TStartup>()
             where TStartup : class
         {
-            Console.WriteLine($@"{componentName} version {
-                    Common.AppEnvironment.Version
-                }");
+            return Start<TStartup>(AppEnvironment.Name, 5000);
+        }
 
-            if (Debugger.IsAttached)
-            {
-                Console.WriteLine(@"Is DEBUG");
-            }
-            else
-            {
-                Console.WriteLine(@"Is RELEASE");
-            }
+        /// <summary>
+        /// Starts the service.
+        /// </summary>
+        /// <typeparam name="TStartup">The type of the startup.</typeparam>
+        /// <param name="componentName">Name of the component.</param>
+        public static Task Start<TStartup>(string componentName)
+            where TStartup : class
+        {
+            return Start<TStartup>(componentName, 5000);
+        }
 
-            Console.WriteLine($@"ENV_INFO: {Common.AppEnvironment.EnvInfo}");
+        /// <summary>
+        /// Starts the service.
+        /// </summary>
+        /// <typeparam name="TStartup">The type of the startup.</typeparam>
+        /// <param name="componentName">Name of the component.</param>
+        /// <param name="port">Port that the app is listening to.</param>
+        public static async Task Start<TStartup>(string componentName, int port)
+            where TStartup : class
+        {
+            Console.WriteLine($@"{componentName} version {AppEnvironment.Version}");
+            Console.WriteLine(Debugger.IsAttached ? "DEBUG mode" : "RELEASE mode");
+            Console.WriteLine($@"ENV_INFO: {AppEnvironment.EnvInfo}");
 
             try
             {
                 var host = new WebHostBuilder()
                     .UseKestrel()
-                    .UseUrls("http://*:5000")
+                    .UseUrls($"http://*:{port}")
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<TStartup>()
                     .UseApplicationInsights()
