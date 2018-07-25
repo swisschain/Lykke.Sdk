@@ -51,9 +51,14 @@ namespace Lykke.Sdk.Health
         /// <inheritdoc/>
         public void Register(string type, string value)
         {
-            if (!_issuesDict.ContainsKey(type))
-                _issuesDict.TryAdd(type, new ConcurrentBag<string>());
-            _issuesDict[type].Add(value);
+            _issuesDict.AddOrUpdate(
+                type,
+                new ConcurrentBag<string> { value },
+                (k, v) =>
+                {
+                    v.Add(value);
+                    return v;
+                });
         }
     }
 }
