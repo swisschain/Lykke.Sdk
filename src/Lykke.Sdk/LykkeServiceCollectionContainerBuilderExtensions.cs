@@ -7,6 +7,8 @@ using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Sdk.ActionFilters;
+using Lykke.Sdk.Controllers;
+using Lykke.Sdk.Health;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
@@ -77,6 +79,8 @@ namespace Lykke.Sdk
                 })
                 .AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly()));
 
+            services.AddTransient<IsAliveController>();
+
             services.AddSwaggerGen(options =>
             {
                 options.DefaultLykkeConfiguration(
@@ -134,6 +138,11 @@ namespace Lykke.Sdk
                 .As<IShutdownManager>()
                 .SingleInstance()
                 .IfNotRegistered(typeof(IShutdownManager));
+
+            builder.RegisterType<HealthService>()
+                .As<IHealthService>()
+                .SingleInstance()
+                .IfNotRegistered(typeof(IHealthService));
 
             var container = builder.Build();
 

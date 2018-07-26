@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using JetBrains.Annotations;
+using Lykke.Common;
+using Microsoft.AspNetCore.Hosting;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Lykke.Sdk
 {
@@ -13,38 +13,43 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeStarter
     {
-        /// <summary>
-        /// Starts the service.
-        /// </summary>
+        /// <summary>DEBUG/RELEASE mode flag.</summary>
+        public static bool IsDebug { get; private set; }
+
+        /// <summary>Starts the service.</summary>
         /// <typeparam name="TStartup">The type of the startup.</typeparam>
-        /// <param name="componentName">Name of the component.</param>
-        public static async Task Start<TStartup>(string componentName)
+        /// <param name="isDebug">DEBUG/RELEASE mode flag</param>
+        public static Task Start<TStartup>(bool isDebug)
             where TStartup : class
         {
-            Console.WriteLine($@"{componentName} version {
-                    Common.AppEnvironment.Version
-                }");
+            return Start<TStartup>(isDebug, 5000);
+        }
 
-            if (Debugger.IsAttached)
-            {
-                Console.WriteLine(@"Is DEBUG");
-            }
-            else
-            {
-                Console.WriteLine(@"Is RELEASE");
-            }
+        /// <summary>Starts the service listening to provided port.</summary>
+        /// <typeparam name="TStartup">The type of the startup.</typeparam>
+        /// <param name="port">Port that the app is listening to.</param>
+        /// /// <param name="isDebug">DEBUG/RELEASE mode flag</param>
+        public static async Task Start<TStartup>(bool isDebug, int port)
+            where TStartup : class
+        {
+            IsDebug = isDebug;
 
-            Console.WriteLine($@"ENV_INFO: {Common.AppEnvironment.EnvInfo}");
+            Console.WriteLine($@"{AppEnvironment.Name} version {AppEnvironment.Version}");
+            Console.WriteLine(isDebug ? "DEBUG mode" : "RELEASE mode");
+            Console.WriteLine($@"ENV_INFO: {AppEnvironment.EnvInfo}");
 
             try
             {
-                var host = new WebHostBuilder()
+                var hostBuilder = new WebHostBuilder()
                     .UseKestrel()
-                    .UseUrls("http://*:5000")
+                    .UseUrls($"http://*:{port}")
                     .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<TStartup>()
-                    .UseApplicationInsights()
-                    .Build();
+                    .UseStartup<TStartup>();
+
+                if (!isDebug)
+                    hostBuilder = hostBuilder.UseApplicationInsights();
+
+                var host = hostBuilder.Build();
 
                 await host.RunAsync();
             }

@@ -62,7 +62,7 @@ namespace Lykke.Sdk
                 app.UseSwaggerUI(x =>
                 {
                     x.RoutePrefix = "swagger/ui";
-                    x.SwaggerEndpoint("/swagger/v1/swagger.json", options.SwaggerOptions.ApiVersion);
+                    x.SwaggerEndpoint($"/swagger/{options.SwaggerOptions.ApiVersion}/swagger.json", options.SwaggerOptions.ApiVersion);
 
                     if (!string.IsNullOrWhiteSpace(options.SwaggerOptions.ApiTitle))
                     {

@@ -1,5 +1,4 @@
-﻿using System;
-using Autofac;
+﻿using Autofac;
 using Common.Log;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
@@ -8,6 +7,7 @@ using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Lykke.Sdk
 {
@@ -66,7 +66,6 @@ namespace Lykke.Sdk
                     .RegisterInMonitoringServiceAsync(_monitoringServiceClientSettings.CurrentValue.MonitoringServiceUrl, _healthNotifier)
                     .GetAwaiter()
                     .GetResult();
-
             }
             catch (Exception ex)
             {
@@ -93,7 +92,7 @@ namespace Lykke.Sdk
             try
             {
                 _healthNotifier.Notify("Application is being terminated");
-                
+
                 container.Dispose();
             }
             catch (Exception ex)
@@ -102,14 +101,13 @@ namespace Lykke.Sdk
 
                 try
                 {
-
                     _logFactory.Dispose();
                 }
                 catch (Exception ex1)
                 {
                     Console.WriteLine(ex1);
                 }
-                
+
                 throw;
             }
         }
