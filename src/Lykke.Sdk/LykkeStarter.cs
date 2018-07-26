@@ -2,7 +2,6 @@
 using Lykke.Common;
 using Microsoft.AspNetCore.Hosting;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -47,7 +46,7 @@ namespace Lykke.Sdk
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<TStartup>();
 
-                if (!Debugger.IsAttached)
+                if (!isDebug)
                     hostBuilder = hostBuilder.UseApplicationInsights();
 
                 var host = hostBuilder.Build();
