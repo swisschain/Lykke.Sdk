@@ -26,5 +26,18 @@ namespace Lykke.Sdk
         /// </summary>
         [CanBeNull]
         public Action<ILogBuilder> Extended { get; set; }
+
+        /// <summary>
+        /// This flag indicates whether empty logging system should be used
+        /// </summary>
+        public bool HaveToUseEmptyLogging { get; private set; }
+
+        /// <summary>
+        /// Setup logging system to log nothing. Another options could be not specified in this case.
+        /// </summary>
+        public void UseEmptyLogging()
+        {
+            HaveToUseEmptyLogging = true;
+        }
     }
 }

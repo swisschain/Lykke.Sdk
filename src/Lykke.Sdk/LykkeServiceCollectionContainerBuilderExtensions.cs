@@ -57,20 +57,6 @@ namespace Lykke.Sdk
                 throw new ArgumentException("Logs configuration delegate must be provided.");
             }
 
-            var loggingOptions = new LykkeLoggingOptions<TAppSettings>();
-
-            serviceOptions.Logs(loggingOptions);
-
-            if (string.IsNullOrWhiteSpace(loggingOptions.AzureTableName))
-            {
-                throw new ArgumentException("Logs.AzureTableName must be provided.");
-            }
-
-            if (loggingOptions.AzureTableConnectionStringResolver == null)
-            {
-                throw new ArgumentException("Logs.AzureTableConnectionStringResolver must be provided");
-            }
-
             services.AddMvc(options => options.Filters.Add(new ActionValidationFilter()))
                 .AddJsonOptions(options =>
                 {
@@ -95,15 +81,36 @@ namespace Lykke.Sdk
                 .Build();
             var settings = configurationRoot.LoadSettings<TAppSettings>();
 
-            services.AddLykkeLogging(
-                settings.ConnectionString(loggingOptions.AzureTableConnectionStringResolver),
-                loggingOptions.AzureTableName,
-                settings.CurrentValue.SlackNotifications.AzureQueue.ConnectionString,
-                settings.CurrentValue.SlackNotifications.AzureQueue.QueueName,
-                options =>
+            var loggingOptions = new LykkeLoggingOptions<TAppSettings>();
+
+            serviceOptions.Logs(loggingOptions);
+
+            if (loggingOptions.HaveToUseEmptyLogging)
+            {
+                services.AddEmptyLykkeLogging();
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(loggingOptions.AzureTableName))
                 {
-                    loggingOptions.Extended?.Invoke(options);
-                });
+                    throw new ArgumentException("Logs.AzureTableName must be provided.");
+                }
+
+                if (loggingOptions.AzureTableConnectionStringResolver == null)
+                {
+                    throw new ArgumentException("Logs.AzureTableConnectionStringResolver must be provided");
+                }
+
+                services.AddLykkeLogging(
+                    settings.ConnectionString(loggingOptions.AzureTableConnectionStringResolver),
+                    loggingOptions.AzureTableName,
+                    settings.CurrentValue.SlackNotifications.AzureQueue.ConnectionString,
+                    settings.CurrentValue.SlackNotifications.AzureQueue.QueueName,
+                    options =>
+                    {
+                        loggingOptions.Extended?.Invoke(options);
+                    });
+            }
 
             serviceOptions.Extend?.Invoke(services, settings);
 
