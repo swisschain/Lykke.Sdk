@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Lykke.SettingsReader.Attributes;
 
 namespace Lykke.Sdk.Settings
 {
@@ -11,6 +12,7 @@ namespace Lykke.Sdk.Settings
         /// <summary>
         /// The slack notification settings.
         /// </summary>
+        [Optional]
         public SlackNotificationsSettings SlackNotifications { get; set; }
 
         /// <summary>

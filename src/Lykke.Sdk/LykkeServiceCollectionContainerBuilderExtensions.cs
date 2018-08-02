@@ -100,6 +100,11 @@ namespace Lykke.Sdk
                 {
                     throw new ArgumentException("Logs.AzureTableConnectionStringResolver must be provided");
                 }
+                
+                if (settings.CurrentValue.SlackNotifications == null)
+                {
+                    throw new ArgumentException("SlackNotifications settings section should be specified, when Lykke logging is enabled");
+                }
 
                 services.AddLykkeLogging(
                     settings.ConnectionString(loggingOptions.AzureTableConnectionStringResolver),
@@ -112,13 +117,11 @@ namespace Lykke.Sdk
                     });
             }
 
-            serviceOptions.Extend?.Invoke(services, settings);
-
             var builder = new ContainerBuilder();
 
-            builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
+            serviceOptions.Extend?.Invoke(services, settings);
 
-            builder.RegisterInstance(settings.CurrentValue.SlackNotifications);
+            builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
 
             if (settings.CurrentValue.MonitoringServiceClient == null)
             {
