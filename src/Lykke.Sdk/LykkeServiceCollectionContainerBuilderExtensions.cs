@@ -4,6 +4,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
+using Lykke.Common;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Sdk.ActionFilters;
@@ -79,7 +80,13 @@ namespace Lykke.Sdk
             var configurationRoot = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .Build();
+
             var settings = configurationRoot.LoadSettings<TAppSettings>();
+
+            var appSettings = settings.CurrentValue;
+            
+            configurationRoot.CheckDependenciesAsync(appSettings, appSettings.SlackNotifications.AzureQueue.ConnectionString,
+                appSettings.SlackNotifications.AzureQueue.QueueName, $"{AppEnvironment.Name} {AppEnvironment.Version}");
 
             var loggingOptions = new LykkeLoggingOptions<TAppSettings>();
 
