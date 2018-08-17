@@ -165,7 +165,17 @@ namespace Lykke.Sdk
 
             var appLifetime = container.Resolve<IApplicationLifetime>();
 
-            appLifetime.ApplicationStarted.Register(container.Resolve<AppLifetimeHandler>().HandleStarted);
+            appLifetime.ApplicationStarted.Register(() =>
+            {
+                try
+                {
+                    container.Resolve<AppLifetimeHandler>().HandleStarted();
+                }
+                catch (Exception)
+                {
+                    appLifetime.StopApplication();
+                }
+            });
             appLifetime.ApplicationStopping.Register(container.Resolve<AppLifetimeHandler>().HandleStopping);
             appLifetime.ApplicationStopped.Register(() => container.Resolve<AppLifetimeHandler>().HandleStopped(container));
 
