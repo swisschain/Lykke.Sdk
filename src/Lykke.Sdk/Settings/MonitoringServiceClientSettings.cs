@@ -12,7 +12,7 @@ namespace Lykke.Sdk.Settings
         /// <summary>
         /// Gets or sets the monitoring service URL.
         /// </summary>
-        [HttpCheck("api/isalive", false)]
+        [HttpCheck("api/isalive")]
         public string MonitoringServiceUrl { get; set; }
     }
 }
