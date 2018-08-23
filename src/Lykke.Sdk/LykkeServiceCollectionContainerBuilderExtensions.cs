@@ -81,12 +81,12 @@ namespace Lykke.Sdk
                 .AddEnvironmentVariables()
                 .Build();
 
-            var settings = configurationRoot.LoadSettings<TAppSettings>();
-
-            var appSettings = settings.CurrentValue;
-            
-            configurationRoot.CheckDependenciesAsync(appSettings, appSettings.SlackNotifications.AzureQueue.ConnectionString,
-                appSettings.SlackNotifications.AzureQueue.QueueName, $"{AppEnvironment.Name} {AppEnvironment.Version}");
+            var settings = configurationRoot.LoadSettings<TAppSettings>(options =>
+            {
+                options.SetConnString(x => x.SlackNotifications.AzureQueue.ConnectionString);
+                options.SetQueueName(x => x.SlackNotifications.AzureQueue.QueueName);
+                options.SenderName = $"{AppEnvironment.Name} {AppEnvironment.Version}";
+            });
 
             var loggingOptions = new LykkeLoggingOptions<TAppSettings>();
 
