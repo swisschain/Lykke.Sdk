@@ -58,7 +58,11 @@ namespace Lykke.Sdk
                 throw new ArgumentException("Logs configuration delegate must be provided.");
             }
 
-            services.AddMvc(options => options.Filters.Add(new ActionValidationFilter()))
+            services.AddMvc(options =>
+                {
+                    options.Filters.Add(new ActionValidationFilter());
+                    serviceOptions.ConfigureMvcOptions?.Invoke(options);
+                })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());

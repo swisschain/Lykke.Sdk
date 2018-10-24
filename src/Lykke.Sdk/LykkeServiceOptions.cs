@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
 using Lykke.SettingsReader;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -43,5 +44,11 @@ namespace Lykke.Sdk
         /// </summary>
         [CanBeNull]
         public Action<IModuleRegistration> RegisterAdditionalModules { get; set; }
+        
+        /// <summary>
+        ///  Extends mvc options. Optional
+        /// </summary>
+        [CanBeNull]
+        public Action<MvcOptions> ConfigureMvcOptions { get; set; }
     }
 }
