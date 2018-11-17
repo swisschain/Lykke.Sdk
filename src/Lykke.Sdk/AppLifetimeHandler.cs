@@ -48,6 +48,8 @@ namespace Lykke.Sdk
         {
             try
             {
+                _healthNotifier.Notify("Initializing");
+
                 _startupManager.StartAsync().GetAwaiter().GetResult();
 
                 _healthNotifier.Notify("Application is started");
