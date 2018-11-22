@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Mvc;
@@ -28,27 +29,33 @@ namespace Lykke.Sdk
         public Action<LykkeLoggingOptions<TAppSettings>> Logs { get; set; }
 
         /// <summary>
-        /// Extended swagger configuration delegate. Optional
+        /// Extended swagger configuration delegate. Optional.
         /// </summary>
         [CanBeNull]
         public Action<SwaggerGenOptions> Swagger { get; set; }
 
         /// <summary>
-        /// Extended service configuration calls.
+        /// Extended service configuration calls. Optional.
         /// </summary>
         [CanBeNull]
         public Action<IServiceCollection, IReloadingManager<TAppSettings>> Extend { get; set; }
 
         /// <summary>
-        ///  Register additional AutoFac modules.
+        ///  Register additional AutoFac modules. Optional.
         /// </summary>
         [CanBeNull]
         public Action<IModuleRegistration> RegisterAdditionalModules { get; set; }
         
         /// <summary>
-        ///  Extends mvc options. Optional
+        ///  Extends mvc options. Optional.
         /// </summary>
         [CanBeNull]
         public Action<MvcOptions> ConfigureMvcOptions { get; set; }
+        
+        /// <summary>
+        ///  Extends fluent validation options. Optional.
+        /// </summary>
+        [CanBeNull]
+        public Action<FluentValidationMvcConfiguration> ConfigureFluentValidation { get; set; }
     }
 }
