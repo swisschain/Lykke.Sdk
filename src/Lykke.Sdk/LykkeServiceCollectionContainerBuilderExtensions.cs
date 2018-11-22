@@ -68,7 +68,11 @@ namespace Lykke.Sdk
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 })
-                .AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly()));
+                .AddFluentValidation(x =>
+                {
+                    x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly());
+                    serviceOptions.ConfigureFluentValidation?.Invoke(x);
+                });
 
             services.AddTransient<IsAliveController>();
 
