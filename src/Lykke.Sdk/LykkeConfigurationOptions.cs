@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.ApiLibrary.Middleware;
+using Lykke.Sdk.Middleware;
 using Microsoft.AspNetCore.Builder;
 
 namespace Lykke.Sdk
@@ -28,6 +29,7 @@ namespace Lykke.Sdk
         public Action<IApplicationBuilder> WithMiddleware { get; set; }
 
         internal bool HaveToDisableValidationExceptionMiddleware { get; set; }
+        internal bool HaveToDisableUnhandledExceptionLoggingMiddleware { get; set; }
 
         internal LykkeConfigurationOptions()
         {
@@ -43,6 +45,14 @@ namespace Lykke.Sdk
         public void DisableValidationExceptionMiddleware()
         {
             HaveToDisableValidationExceptionMiddleware = true;
+        }
+
+        /// <summary>
+        /// Disables the <see cref="UnhandledExceptionLoggingMiddleware"/> middleware, which logs unhandled exceptions.
+        /// </summary>
+        public void DisableUnhandledExceptionLoggingMiddleware()
+        {
+            HaveToDisableUnhandledExceptionLoggingMiddleware = true;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.Log;
+using Lykke.Sdk.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,12 @@ namespace Lykke.Sdk
 
             try
             {
-                app.UseLykkeMiddleware(options.DefaultErrorHandler);
+                app.UseMiddleware<UnhandledExceptionResponseMiddleware>(options.DefaultErrorHandler);
+
+                if (!options.HaveToDisableUnhandledExceptionLoggingMiddleware)
+                {
+                    app.UseMiddleware<UnhandledExceptionLoggingMiddleware>();
+                }
 
                 if (!options.HaveToDisableValidationExceptionMiddleware)
                 {
