@@ -60,23 +60,34 @@ namespace Lykke.Sdk
                 throw new ArgumentException("Logs configuration delegate must be provided.");
             }
 
-            services.AddMvc(options =>
+            var mvc = services.AddMvc(options =>
                 {
-                    options.Filters.Add(new ActionValidationFilter());
+                    if (!serviceOptions.HaveToDisableValidationFilter)
+                    {
+                        options.Filters.Add(new ActionValidationFilter());
+                    }
+
                     serviceOptions.ConfigureMvcOptions?.Invoke(options);
                 })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
-                })
-                .AddFluentValidation(x =>
+                });
+
+            if (!serviceOptions.HaveToDisableFluentValidation)
+            {
+                mvc.AddFluentValidation(x =>
                 {
                     x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly());
                     serviceOptions.ConfigureFluentValidation?.Invoke(x);
                 });
+            }
 
-            services.AddTransient<IsAliveController>();
+            if (!serviceOptions.HaveToDisableIsAliveController)
+            {
+                services.AddTransient<IsAliveController>();
+            }
 
             services.AddSwaggerGen(options =>
             {

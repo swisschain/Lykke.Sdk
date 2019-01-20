@@ -47,7 +47,12 @@ namespace Lykke.Sdk
             try
             {
                 app.UseLykkeMiddleware(options.DefaultErrorHandler);
-                app.UseMiddleware<ClientServiceApiExceptionMiddleware>();
+
+                if (!options.HaveToDisableValidationExceptionMiddleware)
+                {
+                    app.UseMiddleware<ClientServiceApiExceptionMiddleware>();
+                }
+
                 app.UseLykkeForwardedHeaders();
 
                 // Middleware like authentication needs to be registered before Mvc

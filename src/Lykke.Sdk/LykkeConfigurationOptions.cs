@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Lykke.Common.Api.Contract.Responses;
+using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.ApiLibrary.Middleware;
 using Microsoft.AspNetCore.Builder;
 
@@ -26,11 +27,22 @@ namespace Lykke.Sdk
         /// <summary>Additional middleware</summary>
         public Action<IApplicationBuilder> WithMiddleware { get; set; }
 
+        internal bool HaveToDisableValidationExceptionMiddleware { get; set; }
+
         internal LykkeConfigurationOptions()
         {
             DefaultErrorHandler = ex => ErrorResponse.Create("Technical problem");
             SwaggerOptions = new LykkeSwaggerOptions();
         }
 
+        /// <summary>
+        /// Disables the middleware, which processes <see cref="ValidationApiException"/>
+        /// and builds according error response.
+        /// Also see <see cref="LykkeServiceOptions{TAppSettings}.DisableValidationFilter()"/>. 
+        /// </summary>
+        public void DisableValidationExceptionMiddleware()
+        {
+            HaveToDisableValidationExceptionMiddleware = true;
+        }
     }
 }

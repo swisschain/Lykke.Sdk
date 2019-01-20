@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
+using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,5 +65,37 @@ namespace Lykke.Sdk
         /// </summary>
         [CanBeNull]
         public Action<FluentValidationMvcConfiguration> ConfigureFluentValidation { get; set; }
+
+        internal bool HaveToDisableValidationFilter { get; private set; }
+        
+        internal bool HaveToDisableFluentValidation { get; private set; }
+
+        internal bool HaveToDisableIsAliveController { get; set; }
+
+        /// <summary>
+        /// Disables the action filter, which throws <see cref="ValidationApiException"/>
+        /// if model state is not valid.
+        /// Also see <see cref="LykkeConfigurationOptions.DisableValidationExceptionMiddleware()"/>
+        /// </summary>
+        public void DisableValidationFilter()
+        {
+            HaveToDisableValidationFilter = true;
+        }
+
+        /// <summary>
+        /// Disables the fluent validation.
+        /// </summary>
+        public void DisableFluentValidation()
+        {
+            HaveToDisableFluentValidation = true;
+        }
+
+        /// <summary>
+        /// Disables default IsAlive controller.
+        /// </summary>
+        public void DisableIsAliveController()
+        {
+            HaveToDisableIsAliveController = true;
+        }
     }
 }
