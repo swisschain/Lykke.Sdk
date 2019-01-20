@@ -9,19 +9,31 @@ using Newtonsoft.Json;
 namespace Lykke.Sdk.Middleware
 {
     /// <summary>
+    /// Delegate to resolve HTTP status code in case of unhandled exception
+    /// </summary>
+    /// <param name="ex"></param>
+    /// <returns></returns>
+    [PublicAPI]
+    public delegate HttpStatusCode ResolveHttpStatusCode(Exception ex);
+
+    /// <summary>
     /// Middleware that handles all unhandled exceptions and uses delegate to generate the error response object.
     /// </summary>
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     internal class UnhandledExceptionResponseMiddleware : IMiddleware
     {
-        private readonly CreateErrorResponse _createErrorResponse;
+        private readonly CreateErrorResponse _errorResponseFactory;
+        private readonly ResolveHttpStatusCode _httpStatusCodeResolver;
 
         /// <summary>
         /// Middleware that handles all unhandled exceptions and uses delegate to generate the error response object.
         /// </summary>
-        public UnhandledExceptionResponseMiddleware(CreateErrorResponse errorResponseFactory)
+        public UnhandledExceptionResponseMiddleware(
+            CreateErrorResponse errorResponseFactory,
+            ResolveHttpStatusCode httpStatusCodeResolver)
         {
-            _createErrorResponse = errorResponseFactory ?? throw new ArgumentNullException(nameof(errorResponseFactory));
+            _errorResponseFactory = errorResponseFactory ?? throw new ArgumentNullException(nameof(errorResponseFactory));
+            _httpStatusCodeResolver = httpStatusCodeResolver ?? throw new ArgumentNullException(nameof(httpStatusCodeResolver));
         }
 
         async Task IMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
@@ -33,9 +45,9 @@ namespace Lykke.Sdk.Middleware
             catch (Exception ex)
             {
                 context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = (int) _httpStatusCodeResolver.Invoke(ex);
 
-                var response = _createErrorResponse(ex);
+                var response = _errorResponseFactory.Invoke(ex);
                 var responseJson = JsonConvert.SerializeObject(response);
 
                 await context.Response.WriteAsync(responseJson);

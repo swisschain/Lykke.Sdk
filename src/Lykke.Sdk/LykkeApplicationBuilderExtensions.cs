@@ -47,7 +47,9 @@ namespace Lykke.Sdk
 
             try
             {
-                app.UseMiddleware<UnhandledExceptionResponseMiddleware>(options.DefaultErrorHandler);
+                app.UseMiddleware<UnhandledExceptionResponseMiddleware>(
+                    options.DefaultErrorHandler,
+                    options.UnhandledExceptionHttpStatusCodeResolver);
 
                 if (!options.HaveToDisableUnhandledExceptionLoggingMiddleware)
                 {

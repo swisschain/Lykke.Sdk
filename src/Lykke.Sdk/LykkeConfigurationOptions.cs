@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Lykke.Common.Api.Contract.Responses;
@@ -15,8 +16,11 @@ namespace Lykke.Sdk
     [PublicAPI]
     public class LykkeConfigurationOptions
     {
-        /// <summary>Default error handler.</summary>
+        /// <summary>Unhanded exceptions error response factory.</summary>
         public CreateErrorResponse DefaultErrorHandler { get; set; }
+
+        /// <summary>Unhandled exceptions HTTP status code reolver.</summary>
+        public ResolveHttpStatusCode UnhandledExceptionHttpStatusCodeResolver { get; set; }
 
         /// <summary>Lykke swagger options</summary>
         public LykkeSwaggerOptions SwaggerOptions { get; set; }
@@ -34,6 +38,7 @@ namespace Lykke.Sdk
         internal LykkeConfigurationOptions()
         {
             DefaultErrorHandler = ex => ErrorResponse.Create("Technical problem");
+            UnhandledExceptionHttpStatusCodeResolver = ex => HttpStatusCode.InternalServerError;
             SwaggerOptions = new LykkeSwaggerOptions();
         }
 
