@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -66,12 +67,18 @@ namespace Lykke.Sdk
         [CanBeNull]
         public Action<FluentValidationMvcConfiguration> ConfigureFluentValidation { get; set; }
 
+        /// <summary>
+        /// Optional.
+        /// Configures application parts manager
+        /// </summary>
+        public Action<ApplicationPartManager> ConfigureApplicationParts { get; set; }
+
         internal bool HaveToDisableValidationFilter { get; private set; }
         
         internal bool HaveToDisableFluentValidation { get; private set; }
 
         internal bool HaveToDisableIsAliveController { get; private set; }
-
+        
         /// <summary>
         /// Disables the action filter, which throws <see cref="ValidationApiException"/>
         /// if model state is not valid.

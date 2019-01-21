@@ -72,7 +72,12 @@ namespace Lykke.Sdk
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                    options.SerializerSettings.ContractResolver =
+                        new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                })
+                .ConfigureApplicationPartManager(partsManager =>
+                {
+                    serviceOptions.ConfigureApplicationParts?.Invoke(partsManager);
                 });
 
             if (!serviceOptions.HaveToDisableFluentValidation)
