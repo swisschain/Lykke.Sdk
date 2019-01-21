@@ -118,8 +118,8 @@ namespace Lykke.Sdk
 
             var settings = configurationRoot.LoadSettings<TAppSettings>(options =>
             {
-                options.SetConnString(x => x.SlackNotifications.AzureQueue.ConnectionString);
-                options.SetQueueName(x => x.SlackNotifications.AzureQueue.QueueName);
+                options.SetConnString(x => x.SlackNotifications?.AzureQueue.ConnectionString);
+                options.SetQueueName(x => x.SlackNotifications?.AzureQueue.QueueName);
                 options.SenderName = $"{AppEnvironment.Name} {AppEnvironment.Version}";
             });
 

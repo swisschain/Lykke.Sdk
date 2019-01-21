@@ -70,7 +70,7 @@ namespace Lykke.Sdk
         
         internal bool HaveToDisableFluentValidation { get; private set; }
 
-        internal bool HaveToDisableIsAliveController { get; set; }
+        internal bool HaveToDisableIsAliveController { get; private set; }
 
         /// <summary>
         /// Disables the action filter, which throws <see cref="ValidationApiException"/>

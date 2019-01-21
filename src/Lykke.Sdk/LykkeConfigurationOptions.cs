@@ -32,8 +32,8 @@ namespace Lykke.Sdk
         /// <summary>Additional middleware</summary>
         public Action<IApplicationBuilder> WithMiddleware { get; set; }
 
-        internal bool HaveToDisableValidationExceptionMiddleware { get; set; }
-        internal bool HaveToDisableUnhandledExceptionLoggingMiddleware { get; set; }
+        internal bool HaveToDisableValidationExceptionMiddleware { get; private set; }
+        internal bool HaveToDisableUnhandledExceptionLoggingMiddleware { get; private set; }
 
         internal LykkeConfigurationOptions()
         {
