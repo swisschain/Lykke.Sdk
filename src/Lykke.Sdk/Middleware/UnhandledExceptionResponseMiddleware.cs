@@ -20,8 +20,9 @@ namespace Lykke.Sdk.Middleware
     /// Middleware that handles all unhandled exceptions and uses delegate to generate the error response object.
     /// </summary>
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    internal class UnhandledExceptionResponseMiddleware : IMiddleware
+    internal class UnhandledExceptionResponseMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly CreateErrorResponse _errorResponseFactory;
         private readonly ResolveHttpStatusCode _httpStatusCodeResolver;
 
@@ -29,18 +30,23 @@ namespace Lykke.Sdk.Middleware
         /// Middleware that handles all unhandled exceptions and uses delegate to generate the error response object.
         /// </summary>
         public UnhandledExceptionResponseMiddleware(
+            RequestDelegate next,
             CreateErrorResponse errorResponseFactory,
             ResolveHttpStatusCode httpStatusCodeResolver)
         {
+            _next = next;
             _errorResponseFactory = errorResponseFactory ?? throw new ArgumentNullException(nameof(errorResponseFactory));
             _httpStatusCodeResolver = httpStatusCodeResolver ?? throw new ArgumentNullException(nameof(httpStatusCodeResolver));
         }
 
-        async Task IMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+        /// <summary>
+        /// Invokes the middleware
+        /// </summary>
+        public async Task Invoke(HttpContext context)
         {
             try
             {
-                await next.Invoke(context);
+                await _next.Invoke(context);
             }
             catch (Exception ex)
             {

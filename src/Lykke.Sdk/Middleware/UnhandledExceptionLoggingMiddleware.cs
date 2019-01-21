@@ -14,28 +14,33 @@ namespace Lykke.Sdk.Middleware
     /// Middleware that handles all unhandled exceptions and logs them as errors.
     /// </summary>
     [PublicAPI]
-    public class UnhandledExceptionLoggingMiddleware : IMiddleware
+    public class UnhandledExceptionLoggingMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly ILog _log;
 
         /// <summary>
         /// Middleware that handles all unhandled exceptions and logs them as errors.
         /// </summary>
-        public UnhandledExceptionLoggingMiddleware(ILogFactory logFactory)
+        public UnhandledExceptionLoggingMiddleware(RequestDelegate next, ILogFactory logFactory)
         {
             if (logFactory == null)
             {
                 throw new ArgumentNullException(nameof(logFactory));
             }
 
+            _next = next;
             _log = logFactory.CreateLog(this);
         }
 
-        async Task IMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+        /// <summary>
+        /// Invokes the middleware
+        /// </summary>
+        public async Task Invoke(HttpContext context)
         {
             try
             {
-                await next.Invoke(context);
+                await _next.Invoke(context);
             }
             catch (Exception ex)
             {
