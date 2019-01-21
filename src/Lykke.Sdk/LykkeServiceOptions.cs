@@ -77,8 +77,6 @@ namespace Lykke.Sdk
         
         internal bool HaveToDisableFluentValidation { get; private set; }
 
-        internal bool HaveToDisableIsAliveController { get; private set; }
-        
         /// <summary>
         /// Disables the action filter, which throws <see cref="ValidationApiException"/>
         /// if model state is not valid.
@@ -95,14 +93,6 @@ namespace Lykke.Sdk
         public void DisableFluentValidation()
         {
             HaveToDisableFluentValidation = true;
-        }
-
-        /// <summary>
-        /// Disables default IsAlive controller.
-        /// </summary>
-        public void DisableIsAliveController()
-        {
-            HaveToDisableIsAliveController = true;
         }
     }
 }

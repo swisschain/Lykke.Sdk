@@ -9,7 +9,6 @@ using Lykke.Common;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Sdk.ActionFilters;
-using Lykke.Sdk.Controllers;
 using Lykke.Sdk.Health;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
@@ -87,11 +86,6 @@ namespace Lykke.Sdk
                     x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly());
                     serviceOptions.ConfigureFluentValidation?.Invoke(x);
                 });
-            }
-
-            if (!serviceOptions.HaveToDisableIsAliveController)
-            {
-                services.AddTransient<IsAliveController>();
             }
 
             services.AddSwaggerGen(options =>
