@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.Log;
@@ -63,6 +64,14 @@ namespace Lykke.Sdk
                 {
                     x.RoutePrefix = "swagger/ui";
                     x.SwaggerEndpoint($"/swagger/{options.SwaggerOptions.ApiVersion}/swagger.json", options.SwaggerOptions.ApiVersion);
+
+                    if (options.AdditionalSwaggerOptions.Any())
+                    {
+                        foreach (var swaggerVersion in options.AdditionalSwaggerOptions)
+                        {
+                            x.SwaggerEndpoint($"/swagger/{swaggerVersion.ApiVersion}/swagger.json", swaggerVersion.ApiVersion);
+                        }
+                    }
 
                     if (!string.IsNullOrWhiteSpace(options.SwaggerOptions.ApiTitle))
                     {

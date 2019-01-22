@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Lykke.Sdk
 {
@@ -82,6 +84,20 @@ namespace Lykke.Sdk
                     serviceOptions.SwaggerOptions.ApiVersion ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"),
                     serviceOptions.SwaggerOptions.ApiTitle ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiTitle)}"));
 
+                if (serviceOptions.AdditionalSwaggerOptions.Any())
+                {
+                    foreach (var swaggerVersion in serviceOptions.AdditionalSwaggerOptions)
+                    {
+                        options.SwaggerDoc(
+                            $"{swaggerVersion.ApiVersion}",
+                            new Info
+                            {
+                                Version = swaggerVersion.ApiVersion,
+                                Title = swaggerVersion.ApiTitle
+                            });
+                    }
+                }
+                
                 serviceOptions.Swagger?.Invoke(options);
             });
 

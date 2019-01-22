@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Middleware;
@@ -17,6 +18,10 @@ namespace Lykke.Sdk
 
         /// <summary>Lykke swagger options</summary>
         public LykkeSwaggerOptions SwaggerOptions { get; set; }
+
+        /// <summary>Additional lykke swagger options</summary>
+        public IReadOnlyCollection<LykkeSwaggerOptions> AdditionalSwaggerOptions { get; set; } =
+            Array.Empty<LykkeSwaggerOptions>();
 
         /// <summary>Additional middleware</summary>
         public Action<IApplicationBuilder> WithMiddleware { get; set; }
