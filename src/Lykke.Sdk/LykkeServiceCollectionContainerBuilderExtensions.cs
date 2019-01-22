@@ -92,8 +92,8 @@ namespace Lykke.Sdk
                             $"{swaggerVersion.ApiVersion}",
                             new Info
                             {
-                                Version = swaggerVersion.ApiVersion,
-                                Title = swaggerVersion.ApiTitle
+                                Version = swaggerVersion.ApiVersion ?? throw new ArgumentException($"{nameof(serviceOptions.AdditionalSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"),
+                                Title = swaggerVersion.ApiTitle ?? throw new ArgumentException($"{nameof(serviceOptions.AdditionalSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiTitle)}")
                             });
                     }
                 }
