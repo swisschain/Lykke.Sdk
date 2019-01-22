@@ -70,7 +70,7 @@ namespace Lykke.Sdk
                         foreach (var swaggerVersion in options.AdditionalSwaggerOptions)
                         {
                             if (string.IsNullOrEmpty(swaggerVersion.ApiVersion))
-                                throw new ArgumentException($"{nameof(options.AdditionalSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}");
+                                throw new ArgumentNullException($"{nameof(options.AdditionalSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}");
                             
                             x.SwaggerEndpoint($"/swagger/{swaggerVersion.ApiVersion}/swagger.json", swaggerVersion.ApiVersion);
                         }
