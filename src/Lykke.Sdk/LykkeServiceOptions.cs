@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
@@ -21,6 +22,12 @@ namespace Lykke.Sdk
         /// </summary>
         [Required]
         public LykkeSwaggerOptions SwaggerOptions { get; set; }
+
+        /// <summary>
+        /// Additional Swagger Options.
+        /// </summary>
+        public IReadOnlyCollection<LykkeSwaggerOptions> AdditionalSwaggerOptions { get; set; } =
+            Array.Empty<LykkeSwaggerOptions>();
 
         /// <summary>
         /// Logging configuration delegate. Required.

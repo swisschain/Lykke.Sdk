@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Lykke.Sdk
 {
@@ -79,9 +81,23 @@ namespace Lykke.Sdk
             services.AddSwaggerGen(options =>
             {
                 options.DefaultLykkeConfiguration(
-                    serviceOptions.SwaggerOptions.ApiVersion ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"),
-                    serviceOptions.SwaggerOptions.ApiTitle ?? throw new ArgumentException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiTitle)}"));
+                    serviceOptions.SwaggerOptions.ApiVersion ?? throw new ArgumentNullException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"),
+                    serviceOptions.SwaggerOptions.ApiTitle ?? throw new ArgumentNullException($"{nameof(LykkeSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiTitle)}"));
 
+                if (serviceOptions.AdditionalSwaggerOptions.Any())
+                {
+                    foreach (var swaggerVersion in serviceOptions.AdditionalSwaggerOptions)
+                    {
+                        options.SwaggerDoc(
+                            $"{swaggerVersion.ApiVersion}",
+                            new Info
+                            {s
+                                Version = swaggerVersion.ApiVersion ?? throw new ArgumentNullException($"{nameof(serviceOptions.AdditionalSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}"),
+                                Title = swaggerVersion.ApiTitle ?? throw new ArgumentNullException($"{nameof(serviceOptions.AdditionalSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiTitle)}")
+                            });
+                    }
+                }
+                
                 serviceOptions.Swagger?.Invoke(options);
             });
 
