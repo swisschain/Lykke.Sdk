@@ -33,7 +33,7 @@ namespace Lykke.Sdk
             this IServiceCollection services,
             Action<LykkeServiceOptions<TAppSettings>> buildServiceOptions)
 
-            where TAppSettings : BaseAppSettings
+            where TAppSettings : class, IAppSettings
         {
             if (services == null)
             {

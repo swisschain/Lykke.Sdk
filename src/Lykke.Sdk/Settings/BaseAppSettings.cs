@@ -7,17 +7,13 @@ namespace Lykke.Sdk.Settings
     /// Base class for lykke settings
     /// </summary>
     [PublicAPI]
-    public class BaseAppSettings
+    public class BaseAppSettings : IAppSettings
     {
-        /// <summary>
-        /// The slack notification settings.
-        /// </summary>
+        /// <inheritdoc />
         [Optional]
         public SlackNotificationsSettings SlackNotifications { get; set; }
 
-        /// <summary>
-        /// The monitoring service settings.
-        /// </summary>
+        /// <inheritdoc />
         public MonitoringServiceClientSettings MonitoringServiceClient { get; set; }
     }
 }
