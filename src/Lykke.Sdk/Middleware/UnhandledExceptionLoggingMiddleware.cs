@@ -45,6 +45,7 @@ namespace Lykke.Sdk.Middleware
             catch (Exception ex)
             {
                 await LogErrorAsync(context, ex);
+                throw;
             }
         }
 
