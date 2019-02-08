@@ -78,7 +78,7 @@ namespace Lykke.Sdk
 
                     if (!string.IsNullOrWhiteSpace(options.SwaggerOptions.ApiTitle))
                     {
-                        x.DocumentTitle(options.SwaggerOptions.ApiTitle);
+                        x.DocumentTitle = options.SwaggerOptions.ApiTitle;
                     }
                 });
             }

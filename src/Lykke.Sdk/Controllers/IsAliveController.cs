@@ -2,7 +2,7 @@
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Sdk.Health;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Linq;
 using System.Net;
 
