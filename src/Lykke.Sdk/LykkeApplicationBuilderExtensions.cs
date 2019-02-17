@@ -3,6 +3,7 @@ using System.Linq;
 using JetBrains.Annotations;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.Log;
+using Lykke.Sdk.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,8 +47,20 @@ namespace Lykke.Sdk
 
             try
             {
-                app.UseLykkeMiddleware(options.DefaultErrorHandler);
-                app.UseMiddleware<ClientServiceApiExceptionMiddleware>();
+                app.UseMiddleware<UnhandledExceptionResponseMiddleware>(
+                    options.DefaultErrorHandler,
+                    options.UnhandledExceptionHttpStatusCodeResolver);
+
+                if (!options.HaveToDisableUnhandledExceptionLoggingMiddleware)
+                {
+                    app.UseMiddleware<UnhandledExceptionLoggingMiddleware>();
+                }
+
+                if (!options.HaveToDisableValidationExceptionMiddleware)
+                {
+                    app.UseMiddleware<ClientServiceApiExceptionMiddleware>();
+                }
+
                 app.UseLykkeForwardedHeaders();
 
                 // Middleware like authentication needs to be registered before Mvc

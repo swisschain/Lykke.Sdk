@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
+using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -64,5 +66,33 @@ namespace Lykke.Sdk
         /// </summary>
         [CanBeNull]
         public Action<FluentValidationMvcConfiguration> ConfigureFluentValidation { get; set; }
+
+        /// <summary>
+        /// Optional.
+        /// Configures application parts manager
+        /// </summary>
+        public Action<ApplicationPartManager> ConfigureApplicationParts { get; set; }
+
+        internal bool HaveToDisableValidationFilter { get; private set; }
+        
+        internal bool HaveToDisableFluentValidation { get; private set; }
+
+        /// <summary>
+        /// Disables the action filter, which throws <see cref="ValidationApiException"/>
+        /// if model state is not valid.
+        /// Also see <see cref="LykkeConfigurationOptions.DisableValidationExceptionMiddleware()"/>
+        /// </summary>
+        public void DisableValidationFilter()
+        {
+            HaveToDisableValidationFilter = true;
+        }
+
+        /// <summary>
+        /// Disables the fluent validation.
+        /// </summary>
+        public void DisableFluentValidation()
+        {
+            HaveToDisableFluentValidation = true;
+        }
     }
 }

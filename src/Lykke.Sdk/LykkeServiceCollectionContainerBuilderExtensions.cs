@@ -9,7 +9,6 @@ using Lykke.Common;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.Sdk.ActionFilters;
-using Lykke.Sdk.Controllers;
 using Lykke.Sdk.Health;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
@@ -34,7 +33,7 @@ namespace Lykke.Sdk
             this IServiceCollection services,
             Action<LykkeServiceOptions<TAppSettings>> buildServiceOptions)
 
-            where TAppSettings : BaseAppSettings
+            where TAppSettings : class, IAppSettings
         {
             if (services == null)
             {
@@ -60,23 +59,34 @@ namespace Lykke.Sdk
                 throw new ArgumentException("Logs configuration delegate must be provided.");
             }
 
-            services.AddMvc(options =>
+            var mvc = services.AddMvc(options =>
                 {
-                    options.Filters.Add(new ActionValidationFilter());
+                    if (!serviceOptions.HaveToDisableValidationFilter)
+                    {
+                        options.Filters.Add(new ActionValidationFilter());
+                    }
+
                     serviceOptions.ConfigureMvcOptions?.Invoke(options);
                 })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                    options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                    options.SerializerSettings.ContractResolver =
+                        new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 })
-                .AddFluentValidation(x =>
+                .ConfigureApplicationPartManager(partsManager =>
+                {
+                    serviceOptions.ConfigureApplicationParts?.Invoke(partsManager);
+                });
+
+            if (!serviceOptions.HaveToDisableFluentValidation)
+            {
+                mvc.AddFluentValidation(x =>
                 {
                     x.RegisterValidatorsFromAssembly(Assembly.GetEntryAssembly());
                     serviceOptions.ConfigureFluentValidation?.Invoke(x);
                 });
-
-            services.AddTransient<IsAliveController>();
+            }
 
             services.AddSwaggerGen(options =>
             {
@@ -107,8 +117,8 @@ namespace Lykke.Sdk
 
             var settings = configurationRoot.LoadSettings<TAppSettings>(options =>
             {
-                options.SetConnString(x => x.SlackNotifications.AzureQueue.ConnectionString);
-                options.SetQueueName(x => x.SlackNotifications.AzureQueue.QueueName);
+                options.SetConnString(x => x.SlackNotifications?.AzureQueue.ConnectionString);
+                options.SetQueueName(x => x.SlackNotifications?.AzureQueue.QueueName);
                 options.SenderName = $"{AppEnvironment.Name} {AppEnvironment.Version}";
             });
 
