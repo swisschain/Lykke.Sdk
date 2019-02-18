@@ -26,6 +26,6 @@
     </PackageReference>
     <PackageReference Include="FluentValidation.AspNetCore" Version="8.1.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="4.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="2.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="1.2.0" />
   </ItemGroup>
 </Project>
