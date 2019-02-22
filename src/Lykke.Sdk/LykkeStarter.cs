@@ -40,14 +40,12 @@ namespace Lykke.Sdk
 
             try
             {
-                var hostBuilder = new WebHostBuilder()
-                    .UseKestrel()
-                    .UseUrls($"http://*:{port}")
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<TStartup>();
-
-                if (!isDebug)
-                    hostBuilder = hostBuilder.UseApplicationInsights();
+                var lykkeHostBuilder = new LykkeWebHostFactory();
+                var hostBuilder = lykkeHostBuilder.CreateWebHostBuilder<TStartup>(options =>
+                {
+                    options.Port = port;
+                    options.IsDebug = isDebug;
+                });
 
                 var host = hostBuilder.Build();
 
