@@ -2,7 +2,6 @@
 using Lykke.Common;
 using Microsoft.AspNetCore.Hosting;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Lykke.Sdk
@@ -13,8 +12,19 @@ namespace Lykke.Sdk
     [PublicAPI]
     public static class LykkeStarter
     {
+        private static object _locker = new object();
+        private static IWebHostFactory _webHostBuilderFactory = new WebHostFactory();
+
         /// <summary>DEBUG/RELEASE mode flag.</summary>
         public static bool IsDebug { get; private set; }
+
+        /// <summary>WebHostFactory for creating IWebHostBuilder.</summary>
+        public static IWebHostFactory WebHostFactory
+        {
+            get => _webHostBuilderFactory;
+            set => _webHostBuilderFactory =
+                    value ?? throw new ArgumentNullException($"{nameof(WebHostFactory)} can't be null");
+        }
 
         /// <summary>Starts the service.</summary>
         /// <typeparam name="TStartup">The type of the startup.</typeparam>
@@ -40,14 +50,12 @@ namespace Lykke.Sdk
 
             try
             {
-                var hostBuilder = new WebHostBuilder()
-                    .UseKestrel()
-                    .UseUrls($"http://*:{port}")
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<TStartup>();
-
-                if (!isDebug)
-                    hostBuilder = hostBuilder.UseApplicationInsights();
+                var hostBuilder = _webHostBuilderFactory
+                    .CreateWebHostBuilder<TStartup>(options =>
+                {
+                    options.Port = port;
+                    options.IsDebug = isDebug;
+                });
 
                 var host = hostBuilder.Build();
 
