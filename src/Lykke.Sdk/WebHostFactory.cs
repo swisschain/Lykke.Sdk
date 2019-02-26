@@ -7,15 +7,16 @@ namespace Lykke.Sdk
     /// <summary>
     /// This class creates IWebHostBuilder which is used in LykkeStarter.
     /// </summary>
-    public class LykkeWebHostFactory
+    public class WebHostFactory : IWebHostFactory
     {
-        public IWebHostBuilder CreateWebHostBuilder<TStartup>(Action<LykkeWebHostFactoryOptions> optionConfiguration) 
+        /// <inheritdoc />
+        public IWebHostBuilder CreateWebHostBuilder<TStartup>(Action<WebHostFactoryOptions> optionConfiguration) 
             where TStartup : class
         {
             if (optionConfiguration == null)
                 throw new ArgumentNullException($"{nameof(optionConfiguration)}");
 
-            var options = new LykkeWebHostFactoryOptions();
+            var options = new WebHostFactoryOptions();
             optionConfiguration(options);
 
             var hostBuilder = new WebHostBuilder()

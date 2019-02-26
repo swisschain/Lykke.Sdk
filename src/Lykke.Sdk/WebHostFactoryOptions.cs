@@ -1,12 +1,12 @@
 ﻿namespace Lykke.Sdk
 {
-    public class LykkeWebHostFactoryOptions
+    public class WebHostFactoryOptions
     {
         public bool IsDebug { get; set; }
 
         public int Port { get; set; }
 
-        internal LykkeWebHostFactoryOptions()
+        internal WebHostFactoryOptions()
         {
             Port = 5000;
         }
