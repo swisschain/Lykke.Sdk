@@ -21,14 +21,12 @@ namespace Lykke.Sdk
         /// <summary>WebHostFactory for creating IWebHostBuilder.</summary>
         public static IWebHostFactory WebHostFactory
         {
+            get => _webHostBuilderFactory;
             set
             {
-                lock (_locker)
-                {
                     //Ignores null
                     if (value != null)
                         _webHostBuilderFactory = value;
-                }
             }
         }
 
