@@ -22,12 +22,8 @@ namespace Lykke.Sdk
         public static IWebHostFactory WebHostFactory
         {
             get => _webHostBuilderFactory;
-            set
-            {
-                    //Ignores null
-                    if (value != null)
-                        _webHostBuilderFactory = value;
-            }
+            set => _webHostBuilderFactory =
+                    value ?? throw new ArgumentNullException($"{nameof(WebHostFactory)} can't be null");
         }
 
         /// <summary>Starts the service.</summary>
