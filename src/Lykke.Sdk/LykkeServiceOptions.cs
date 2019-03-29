@@ -60,6 +60,12 @@ namespace Lykke.Sdk
         /// </summary>
         [CanBeNull]
         public Action<MvcOptions> ConfigureMvcOptions { get; set; }
+
+        /// <summary>
+        /// Extends mvc builder. Optional.
+        /// </summary>
+        [CanBeNull]
+        public Action<IMvcBuilder> ConfigureMvcBuilder { get; set; }
         
         /// <summary>
         ///  Extends fluent validation options. Optional.

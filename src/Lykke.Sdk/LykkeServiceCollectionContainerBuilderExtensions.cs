@@ -88,6 +88,8 @@ namespace Lykke.Sdk
                 });
             }
 
+            serviceOptions.ConfigureMvcBuilder?.Invoke(mvc);
+
             services.AddSwaggerGen(options =>
             {
                 options.DefaultLykkeConfiguration(
