@@ -149,15 +149,15 @@ namespace Lykke.Sdk
                     throw new ArgumentException("SlackNotifications settings section should be specified, when Lykke logging is enabled");
                 }
 
-                services.AddLykkeLogging(
-                    settings.ConnectionString(loggingOptions.AzureTableConnectionStringResolver),
-                    loggingOptions.AzureTableName,
-                    settings.CurrentValue.SlackNotifications.AzureQueue.ConnectionString,
-                    settings.CurrentValue.SlackNotifications.AzureQueue.QueueName,
-                    options =>
-                    {
-                        loggingOptions.Extended?.Invoke(options);
-                    });
+                if (LykkeStarter.IsDebug)
+                    services.AddConsoleLykkeLogging(options => { loggingOptions.Extended?.Invoke(options); });
+                else
+                    services.AddLykkeLogging(
+                        settings.ConnectionString(loggingOptions.AzureTableConnectionStringResolver),
+                        loggingOptions.AzureTableName,
+                        settings.CurrentValue.SlackNotifications.AzureQueue.ConnectionString,
+                        settings.CurrentValue.SlackNotifications.AzureQueue.QueueName,
+                        options => { loggingOptions.Extended?.Invoke(options); });
             }
 
             var builder = new ContainerBuilder();
