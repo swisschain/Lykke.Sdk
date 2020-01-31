@@ -5,9 +5,10 @@ using Lykke.Common.Log;
 using Lykke.MonitoringServiceApiCaller;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Lykke.Sdk
 {
@@ -18,10 +19,10 @@ namespace Lykke.Sdk
         private readonly IHealthNotifier _healthNotifier;
         private readonly IStartupManager _startupManager;
         private readonly IShutdownManager _shutdownManager;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IConfigurationRoot _configurationRoot;
         private readonly IReloadingManager<MonitoringServiceClientSettings> _monitoringServiceClientSettings;
-        
+
         private readonly ILog _log;
 
         public AppLifetimeHandler(
@@ -29,7 +30,7 @@ namespace Lykke.Sdk
             IHealthNotifier healthNotifier,
             IStartupManager startupManager,
             IShutdownManager shutdownManager,
-            IHostingEnvironment hostingEnvironment,
+            IWebHostEnvironment hostingEnvironment,
             IConfigurationRoot configurationRoot,
             IReloadingManager<MonitoringServiceClientSettings> monitoringServiceClientSettings)
         {

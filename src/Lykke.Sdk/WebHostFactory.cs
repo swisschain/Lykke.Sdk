@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using System;
+﻿using System;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Lykke.Sdk
 {
@@ -10,7 +11,7 @@ namespace Lykke.Sdk
     public class WebHostFactory : IWebHostFactory
     {
         /// <inheritdoc />
-        public IWebHostBuilder CreateWebHostBuilder<TStartup>(Action<WebHostFactoryOptions> optionConfiguration) 
+        public IHostBuilder CreateWebHostBuilder<TStartup>(Action<WebHostFactoryOptions> optionConfiguration)
             where TStartup : class
         {
             if (optionConfiguration == null)
@@ -19,14 +20,17 @@ namespace Lykke.Sdk
             var options = new WebHostFactoryOptions();
             optionConfiguration(options);
 
-            var hostBuilder = new WebHostBuilder()
-                .UseKestrel()
-                .UseUrls($"http://*:{options.Port}")
+            var hostBuilder = new HostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<TStartup>();
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseKestrel()
+                        .UseUrls($"http://*:{options.Port}")
+                        .UseStartup<TStartup>();
 
-            if (!options.IsDebug)
-                hostBuilder = hostBuilder.UseApplicationInsights();
+                    if (!options.IsDebug)
+                        webBuilder.UseApplicationInsights();
+                });
 
             return hostBuilder;
         }

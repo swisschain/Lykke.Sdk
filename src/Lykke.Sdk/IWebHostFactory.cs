@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Lykke.Sdk
 {
@@ -16,7 +14,7 @@ namespace Lykke.Sdk
         /// <param name="optionConfiguration">Delegate which configures options for IWebHostBuilder.</param>
         /// <typeparam name="TStartup">Startup class</typeparam>
         /// <returns></returns>
-        IWebHostBuilder CreateWebHostBuilder<TStartup>(Action<WebHostFactoryOptions> optionConfiguration)
+        IHostBuilder CreateWebHostBuilder<TStartup>(Action<WebHostFactoryOptions> optionConfiguration)
             where TStartup : class;
     }
 }
