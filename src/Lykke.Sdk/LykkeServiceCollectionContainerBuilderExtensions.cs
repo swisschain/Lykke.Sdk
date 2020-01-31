@@ -12,9 +12,9 @@ using Lykke.Sdk.ActionFilters;
 using Lykke.Sdk.Health;
 using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -32,7 +32,6 @@ namespace Lykke.Sdk
         public static IServiceProvider BuildServiceProvider<TAppSettings>(
             this IServiceCollection services,
             Action<LykkeServiceOptions<TAppSettings>> buildServiceOptions)
-
             where TAppSettings : class, IAppSettings
         {
             if (services == null)
@@ -59,7 +58,7 @@ namespace Lykke.Sdk
                 throw new ArgumentException("Logs configuration delegate must be provided.");
             }
 
-            var mvc = services.AddMvc(options =>
+            var mvc = services.AddControllersWithViews(options =>
                 {
                     if (!serviceOptions.HaveToDisableValidationFilter)
                     {
@@ -68,7 +67,7 @@ namespace Lykke.Sdk
 
                     serviceOptions.ConfigureMvcOptions?.Invoke(options);
                 })
-                .AddJsonOptions(options =>
+                .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
                     options.SerializerSettings.ContractResolver =
@@ -109,7 +108,7 @@ namespace Lykke.Sdk
                             });
                     }
                 }
-                
+
                 serviceOptions.Swagger?.Invoke(options);
             });
 
@@ -143,7 +142,7 @@ namespace Lykke.Sdk
                 {
                     throw new ArgumentException("Logs.AzureTableConnectionStringResolver must be provided");
                 }
-                
+
                 if (settings.CurrentValue.SlackNotifications == null)
                 {
                     throw new ArgumentException("SlackNotifications settings section should be specified, when Lykke logging is enabled");
@@ -199,7 +198,7 @@ namespace Lykke.Sdk
 
             var container = builder.Build();
 
-            var appLifetime = container.Resolve<IApplicationLifetime>();
+            var appLifetime = container.Resolve<IHostApplicationLifetime>();
 
             appLifetime.ApplicationStarted.Register(() =>
             {

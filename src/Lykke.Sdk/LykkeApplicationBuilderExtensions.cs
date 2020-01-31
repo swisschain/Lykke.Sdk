@@ -7,6 +7,7 @@ using Lykke.Sdk.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Lykke.Sdk
 {
@@ -38,7 +39,7 @@ namespace Lykke.Sdk
             var options = new LykkeConfigurationOptions();
             configureOptions?.Invoke(options);
 
-            var env = app.ApplicationServices.GetService<IHostingEnvironment>();
+            var env = app.ApplicationServices.GetService<IWebHostEnvironment>();
 
             if (env.IsDevelopment())
             {
@@ -63,11 +64,16 @@ namespace Lykke.Sdk
 
                 app.UseLykkeForwardedHeaders();
 
-                // Middleware like authentication needs to be registered before Mvc
+                app.UseStaticFiles();
+                app.UseRouting();
+
+                // Middleware like authentication needs to be registered before endpoints
                 options.WithMiddleware?.Invoke(app);
 
-                app.UseStaticFiles();
-                app.UseMvc();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
 
                 app.UseSwagger();
                 app.UseSwaggerUI(x =>

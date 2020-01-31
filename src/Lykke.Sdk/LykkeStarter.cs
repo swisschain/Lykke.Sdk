@@ -1,8 +1,8 @@
 ﻿using JetBrains.Annotations;
 using Lykke.Common;
-using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 
 namespace Lykke.Sdk
 {
