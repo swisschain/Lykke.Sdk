@@ -69,10 +69,7 @@ namespace Lykke.Sdk
                 app.UseStaticFiles();
                 app.UseMvc();
 
-                app.UseSwagger(c =>
-                {
-                    c.PreSerializeFilters.Add((swagger, httpReq) => swagger.Host = httpReq.Host.Value);
-                });
+                app.UseSwagger();
                 app.UseSwaggerUI(x =>
                 {
                     x.RoutePrefix = "swagger/ui";
@@ -84,7 +81,7 @@ namespace Lykke.Sdk
                         {
                             if (string.IsNullOrEmpty(swaggerVersion.ApiVersion))
                                 throw new ArgumentNullException($"{nameof(options.AdditionalSwaggerOptions)}.{nameof(LykkeSwaggerOptions.ApiVersion)}");
-                            
+
                             x.SwaggerEndpoint($"/swagger/{swaggerVersion.ApiVersion}/swagger.json", swaggerVersion.ApiVersion);
                         }
                     }
