@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using JetBrains.Annotations;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk.Services
 {
     /// <summary>
     /// Service interface for shutdown management.

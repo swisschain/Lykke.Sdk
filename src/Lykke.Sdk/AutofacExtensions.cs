@@ -5,7 +5,7 @@ using Autofac;
 using Autofac.Core;
 using Lykke.SettingsReader;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     internal static class AutofacExtensions
     {

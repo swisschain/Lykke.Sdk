@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk.Services
 {
     internal class EmptyShutdownManager : IShutdownManager
     {

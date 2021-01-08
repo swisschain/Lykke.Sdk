@@ -1,4 +1,4 @@
-﻿namespace Lykke.Sdk
+﻿namespace Antares.Sdk
 {
     public class WebHostFactoryOptions
     {

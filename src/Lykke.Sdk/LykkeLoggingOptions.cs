@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using Lykke.Logs;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     /// <summary>
     /// Lykke logging options class.

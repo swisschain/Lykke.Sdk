@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Lykke.Sdk.Health
+namespace Antares.Sdk.Health
 {
     /// <summary>
     /// Health issue model class

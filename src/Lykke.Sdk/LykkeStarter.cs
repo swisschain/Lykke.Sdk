@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using Lykke.Common;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
+using Lykke.Common;
 using Microsoft.Extensions.Hosting;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     /// <summary>
     /// Lykke default startup routine

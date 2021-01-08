@@ -1,12 +1,12 @@
-﻿using Lykke.Common;
+﻿using System.Linq;
+using System.Net;
+using Antares.Sdk.Health;
+using Lykke.Common;
 using Lykke.Common.Api.Contract.Responses;
-using Lykke.Sdk.Health;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Linq;
-using System.Net;
 
-namespace Lykke.Sdk.Controllers
+namespace Antares.Sdk.Controllers
 {
     // NOTE: See https://lykkex.atlassian.net/wiki/spaces/LKEWALLET/pages/35755585/Add+your+app+to+Monitoring
     /// <summary>

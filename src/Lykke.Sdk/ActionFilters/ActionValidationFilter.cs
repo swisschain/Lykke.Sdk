@@ -3,7 +3,7 @@ using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.ApiLibrary.Extensions;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Lykke.Sdk.ActionFilters
+namespace Antares.Sdk.ActionFilters
 {
     internal class ActionValidationFilter : IActionFilter
     {

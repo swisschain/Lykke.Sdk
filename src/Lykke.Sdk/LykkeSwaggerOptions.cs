@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     /// <summary>
     /// Configuration options for swagger.

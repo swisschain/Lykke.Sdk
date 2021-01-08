@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Antares.Sdk.ActionFilters;
+using Antares.Sdk.Health;
+using Antares.Sdk.Services;
+using Antares.Sdk.Settings;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FluentValidation.AspNetCore;
@@ -8,18 +12,14 @@ using JetBrains.Annotations;
 using Lykke.Common;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
-using Lykke.Sdk.ActionFilters;
-using Lykke.Sdk.Health;
-using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
-using Swashbuckle.AspNetCore.Swagger;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     /// <summary>
     /// Extension methods for <see cref="IServiceCollection"/> class.

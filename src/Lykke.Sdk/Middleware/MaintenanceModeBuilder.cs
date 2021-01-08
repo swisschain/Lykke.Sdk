@@ -1,12 +1,12 @@
 ﻿using System;
+using Antares.Sdk.Health;
 using JetBrains.Annotations;
-using Lykke.Sdk.Health;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Lykke.Sdk.Middleware
+namespace Antares.Sdk.Middleware
 {
     /// <summary>
     /// Maintenance middleware builder.

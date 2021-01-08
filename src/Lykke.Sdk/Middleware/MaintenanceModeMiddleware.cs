@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Antares.Sdk.Health;
 using Common;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
-using Lykke.Sdk.Health;
 using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Http;
 
-namespace Lykke.Sdk.Middleware
+namespace Antares.Sdk.Middleware
 {
     internal sealed class MaintenanceModeMiddleware<TAppSettings> : TimerPeriod
     {

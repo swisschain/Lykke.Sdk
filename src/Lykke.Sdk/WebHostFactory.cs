@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     /// <summary>
     /// This class creates IWebHostBuilder which is used in LykkeStarter.

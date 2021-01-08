@@ -1,7 +1,7 @@
-﻿using JetBrains.Annotations;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 
-namespace Lykke.Sdk.Health
+namespace Antares.Sdk.Health
 {
     /// <summary>
     /// Health service to check the of the service.

@@ -8,7 +8,7 @@ using Lykke.Common.Log;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
 
-namespace Lykke.Sdk.Middleware
+namespace Antares.Sdk.Middleware
 {
     /// <summary>
     /// Middleware that handles all unhandled exceptions and logs them as errors.

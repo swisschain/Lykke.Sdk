@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Lykke.SettingsReader.Attributes;
 
-namespace Lykke.Sdk.Settings
+namespace Antares.Sdk.Settings
 {
     /// <summary>
     /// Base class for lykke settings

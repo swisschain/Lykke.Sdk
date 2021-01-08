@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Net;
 using System.Collections.Generic;
+using System.Net;
+using Antares.Sdk.Middleware;
 using JetBrains.Annotations;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.ApiLibrary.Middleware;
-using Lykke.Sdk.Middleware;
 using Microsoft.AspNetCore.Builder;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     /// <summary>
     /// Configuration options used in UseLykkeConfiguration extension method.

@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using Lykke.SettingsReader;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     /// <summary>
     /// Fluent interface for registration of additional autofac modules outside the entry assembly.

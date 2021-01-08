@@ -1,16 +1,17 @@
-﻿using Autofac;
+﻿using System;
+using Antares.Sdk.Services;
+using Antares.Sdk.Settings;
+using Autofac;
 using Common.Log;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
 using Lykke.MonitoringServiceApiCaller;
-using Lykke.Sdk.Settings;
 using Lykke.SettingsReader;
-using Microsoft.Extensions.Configuration;
-using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace Lykke.Sdk
+namespace Antares.Sdk
 {
     [UsedImplicitly]
     internal class AppLifetimeHandler

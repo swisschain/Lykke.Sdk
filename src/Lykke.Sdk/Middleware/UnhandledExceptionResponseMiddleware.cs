@@ -6,7 +6,7 @@ using Lykke.Common.ApiLibrary.Middleware;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace Lykke.Sdk.Middleware
+namespace Antares.Sdk.Middleware
 {
     /// <summary>
     /// Delegate to resolve HTTP status code in case of unhandled exception

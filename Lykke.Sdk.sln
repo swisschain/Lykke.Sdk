@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2037
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Sdk", "src\Lykke.Sdk\Lykke.Sdk.csproj", "{A121D66B-D07B-40E5-AA55-EA382D68D8D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Antares.Sdk", "src\Lykke.Sdk\Antares.Sdk.csproj", "{A121D66B-D07B-40E5-AA55-EA382D68D8D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

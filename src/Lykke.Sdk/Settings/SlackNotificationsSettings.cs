@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Lykke.Sdk.Settings
+namespace Antares.Sdk.Settings
 {
     /// <summary>
     /// The slack notification settings.

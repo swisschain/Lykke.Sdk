@@ -1,10 +1,10 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 
-namespace Lykke.Sdk.Health
+namespace Antares.Sdk.Health
 {
     /// <summary>
     /// Health service.
