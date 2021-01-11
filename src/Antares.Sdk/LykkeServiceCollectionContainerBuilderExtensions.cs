@@ -30,7 +30,7 @@ namespace Antares.Sdk
         /// <summary>
         /// Build service provider for Lykke's service.
         /// </summary>
-        public static IServiceProvider BuildServiceProvider<TAppSettings>(
+        public static (LykkeServiceOptions<TAppSettings>, IReloadingManagerWithConfiguration<TAppSettings>) ConfigureServices<TAppSettings>(
             this IServiceCollection services,
             Action<LykkeServiceOptions<TAppSettings>> buildServiceOptions)
             where TAppSettings : class, IAppSettings
@@ -160,9 +160,26 @@ namespace Antares.Sdk
                         options => { loggingOptions.Extended?.Invoke(options); });
             }
 
-            var builder = new ContainerBuilder();
+            return (serviceOptions, settings);
+        }
 
-            serviceOptions.Extend?.Invoke(services, settings);
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="serviceOptions"></param>
+        /// <param name="configurationRoot"></param>
+        /// <param name="settings"></param>
+        /// <typeparam name="TAppSettings"></typeparam>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static void ConfigureContainerBuilder<TAppSettings>(
+            ContainerBuilder builder,
+            LykkeServiceOptions<TAppSettings> serviceOptions,
+            IConfigurationRoot configurationRoot,
+            IReloadingManagerWithConfiguration<TAppSettings> settings)
+            where TAppSettings : class, IAppSettings
+        {
+            //serviceOptions.Extend?.Invoke(services, settings);
 
             builder.RegisterInstance(configurationRoot).As<IConfigurationRoot>();
 
@@ -179,7 +196,6 @@ namespace Antares.Sdk
                 .AsSelf()
                 .SingleInstance();
 
-            builder.Populate(services);
             builder.RegisterAssemblyModules(settings, serviceOptions.RegisterAdditionalModules, Assembly.GetEntryAssembly());
 
             builder.RegisterType<EmptyStartupManager>()
@@ -196,9 +212,14 @@ namespace Antares.Sdk
                 .As<IHealthService>()
                 .SingleInstance()
                 .IfNotRegistered(typeof(IHealthService));
+        }
 
-            var container = builder.Build();
-
+        /// <summary>
+        /// ToDo
+        /// </summary>
+        /// <param name="container"></param>
+        public static void InitAppLifetTime(IContainer container)
+        {
             var appLifetime = container.Resolve<IHostApplicationLifetime>();
 
             appLifetime.ApplicationStarted.Register(() =>
@@ -212,10 +233,9 @@ namespace Antares.Sdk
                     appLifetime.StopApplication();
                 }
             });
+
             appLifetime.ApplicationStopping.Register(container.Resolve<AppLifetimeHandler>().HandleStopping);
             appLifetime.ApplicationStopped.Register(() => container.Resolve<AppLifetimeHandler>().HandleStopped(container));
-
-            return new AutofacServiceProvider(container);
         }
     }
 }
