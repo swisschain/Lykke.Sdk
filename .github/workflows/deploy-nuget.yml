@@ -20,6 +20,6 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
     - name: Create the package
-      run: dotnet pack --configuration Release src/Antares.Sdk /p:Version=${GITHUB_REF#refs/tags/}
+      run: dotnet pack --include-symbols --include-source --configuration Release src/Antares.Sdk /p:Version=${GITHUB_REF#refs/tags/}
     - name: Publish the package to GPR
       run: dotnet nuget push src/Antares.Sdk/bin/Release/*.nupkg -s "https://api.nuget.org/v3/index.json" -k ${{ secrets.NUGET_TOCKEN }}
