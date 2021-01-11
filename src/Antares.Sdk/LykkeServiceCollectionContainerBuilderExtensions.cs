@@ -173,7 +173,7 @@ namespace Antares.Sdk
         /// <typeparam name="TAppSettings"></typeparam>
         /// <exception cref="InvalidOperationException"></exception>
         public static void ConfigureContainerBuilder<TAppSettings>(
-            ContainerBuilder builder,
+            this ContainerBuilder builder,
             LykkeServiceOptions<TAppSettings> serviceOptions,
             IConfigurationRoot configurationRoot,
             IReloadingManagerWithConfiguration<TAppSettings> settings)
@@ -218,7 +218,7 @@ namespace Antares.Sdk
         /// ToDo
         /// </summary>
         /// <param name="container"></param>
-        public static void InitAppLifetTime(IContainer container)
+        public static void InitAppLifetTime(this IContainer container)
         {
             var appLifetime = container.Resolve<IHostApplicationLifetime>();
 
