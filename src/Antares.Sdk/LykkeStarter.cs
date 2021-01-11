@@ -58,9 +58,9 @@ namespace Antares.Sdk
                     options.IsDebug = isDebug;
                 });
 
-                hostBuilder.UseServiceProviderFactory(new AutofacServiceProviderFactory());
-
                 var host = hostBuilder.Build();
+                
+                host.Services.InitAppLifetTime();
 
                 await host.RunAsync();
             }

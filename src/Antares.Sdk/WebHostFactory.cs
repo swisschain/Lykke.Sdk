@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -30,7 +31,7 @@ namespace Antares.Sdk
 
                     if (!options.IsDebug)
                         webBuilder.UseApplicationInsights();
-                });
+                }).UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
             return hostBuilder;
         }

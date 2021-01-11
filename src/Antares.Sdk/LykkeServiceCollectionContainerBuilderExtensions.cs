@@ -217,16 +217,16 @@ namespace Antares.Sdk
         /// <summary>
         /// ToDo
         /// </summary>
-        /// <param name="container"></param>
-        public static void InitAppLifetTime(this IContainer container)
+        /// <param name="serviceProvider"></param>
+        public static void InitAppLifetTime(this IServiceProvider serviceProvider)
         {
-            var appLifetime = container.Resolve<IHostApplicationLifetime>();
+            var appLifetime = serviceProvider.GetRequiredService<IHostApplicationLifetime>();
 
             appLifetime.ApplicationStarted.Register(() =>
             {
                 try
                 {
-                    container.Resolve<AppLifetimeHandler>().HandleStarted();
+                    serviceProvider.GetRequiredService<AppLifetimeHandler>().HandleStarted();
                 }
                 catch (Exception)
                 {
@@ -234,8 +234,8 @@ namespace Antares.Sdk
                 }
             });
 
-            appLifetime.ApplicationStopping.Register(container.Resolve<AppLifetimeHandler>().HandleStopping);
-            appLifetime.ApplicationStopped.Register(() => container.Resolve<AppLifetimeHandler>().HandleStopped(container));
+            appLifetime.ApplicationStopping.Register(serviceProvider.GetRequiredService<AppLifetimeHandler>().HandleStopping);
+            appLifetime.ApplicationStopped.Register(() => serviceProvider.GetRequiredService<AppLifetimeHandler>().HandleStopped());
         }
     }
 }

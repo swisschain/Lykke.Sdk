@@ -91,13 +91,11 @@ namespace Antares.Sdk
             }
         }
 
-        public void HandleStopped(IContainer container)
+        public void HandleStopped()
         {
             try
             {
                 _healthNotifier.Notify("Application is being terminated");
-
-                container.Dispose();
             }
             catch (Exception ex)
             {
