@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Autofac.Extensions.DependencyInjection;
 using JetBrains.Annotations;
 using Lykke.Common;
 using Microsoft.Extensions.Hosting;
@@ -56,6 +57,8 @@ namespace Antares.Sdk
                     options.Port = port;
                     options.IsDebug = isDebug;
                 });
+
+                hostBuilder.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
                 var host = hostBuilder.Build();
 
