@@ -62,6 +62,8 @@ namespace Antares.Sdk
                 
                 host.Services.InitAppLifetTime();
 
+                Console.WriteLine($"Running on port: {port}");
+
                 await host.RunAsync();
             }
             catch (Exception ex)

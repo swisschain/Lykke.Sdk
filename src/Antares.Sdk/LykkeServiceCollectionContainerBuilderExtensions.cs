@@ -79,6 +79,8 @@ namespace Antares.Sdk
                     serviceOptions.ConfigureApplicationParts?.Invoke(partsManager);
                 });
 
+            mvc.AddApplicationPart(typeof(Antares.Sdk.LykkeStarter).Assembly);
+
             if (!serviceOptions.HaveToDisableFluentValidation)
             {
                 mvc.AddFluentValidation(x =>
