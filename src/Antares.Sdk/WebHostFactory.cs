@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Hosting;
 
 namespace Antares.Sdk
@@ -25,8 +27,21 @@ namespace Antares.Sdk
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseKestrel()
-                        .UseUrls($"http://*:{options.Port}")
+                    webBuilder.UseKestrel(kestrelOptions =>
+                        {
+                            Console.WriteLine($"Options - HttpPort: {options.Port}");
+                            Console.WriteLine($"Options - GrpcPort: {options.GrpcPort}");
+
+                            kestrelOptions.Listen(IPAddress.Any, options.Port, listenOptions =>
+                            {
+                                listenOptions.Protocols = HttpProtocols.Http1;
+                            });
+
+                            kestrelOptions.Listen(IPAddress.Any, options.GrpcPort, listenOptions =>
+                            {
+                                listenOptions.Protocols = HttpProtocols.Http2;
+                            });
+                        })
                         .UseStartup<TStartup>();
 
                     if (!options.IsDebug)

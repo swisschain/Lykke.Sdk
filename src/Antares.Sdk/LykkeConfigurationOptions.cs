@@ -7,6 +7,7 @@ using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.ApiLibrary.Middleware;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 
 namespace Antares.Sdk
 {
@@ -59,5 +60,7 @@ namespace Antares.Sdk
         {
             HaveToDisableUnhandledExceptionLoggingMiddleware = true;
         }
+
+        public Action<IEndpointRouteBuilder> RegisterEndpoints { get; set; }
     }
 }

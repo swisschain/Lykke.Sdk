@@ -73,6 +73,9 @@ namespace Antares.Sdk
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.MapGrpcReflectionService();
+
+                    options.RegisterEndpoints?.Invoke(endpoints);
                 });
 
                 app.UseSwagger();

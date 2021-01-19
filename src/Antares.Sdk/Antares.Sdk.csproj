@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.34.0" />
     <PackageReference Include="Lykke.AzureStorage" Version="8.13.4" />
     <PackageReference Include="Lykke.Common" Version="7.5.0" />
     <PackageReference Include="Lykke.Common.ApiLibrary" Version="3.1.1" />
