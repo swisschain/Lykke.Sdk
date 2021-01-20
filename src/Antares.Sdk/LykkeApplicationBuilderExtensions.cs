@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Prometheus;
+using Swisschain.Sdk.Metrics.Rest;
 
 namespace Antares.Sdk
 {
@@ -46,8 +48,12 @@ namespace Antares.Sdk
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMetricServer();
+
             try
             {
+                app.UseMiddleware<PrometheusMetricsMiddleware>();
+
                 app.UseMiddleware<UnhandledExceptionResponseMiddleware>(
                     options.DefaultErrorHandler,
                     options.UnhandledExceptionHttpStatusCodeResolver);

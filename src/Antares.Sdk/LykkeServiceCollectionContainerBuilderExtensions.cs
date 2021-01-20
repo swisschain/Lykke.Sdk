@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using Antares.Sdk.ActionFilters;
+﻿using Antares.Sdk.ActionFilters;
 using Antares.Sdk.Health;
 using Antares.Sdk.Services;
 using Antares.Sdk.Settings;
 using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using FluentValidation.AspNetCore;
 using JetBrains.Annotations;
 using Lykke.Common;
@@ -18,6 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
+using Swisschain.Sdk.Metrics.Grpc;
+using System;
+using System.Linq;
+using System.Reflection;
 
 namespace Antares.Sdk
 {
@@ -91,6 +91,11 @@ namespace Antares.Sdk
             }
 
             serviceOptions.ConfigureMvcBuilder?.Invoke(mvc);
+
+            services.AddGrpc(opt =>
+            {
+                opt.Interceptors.Add<PrometheusMetricsInterceptor>();
+            });
 
             services.AddSwaggerGen(options =>
             {
