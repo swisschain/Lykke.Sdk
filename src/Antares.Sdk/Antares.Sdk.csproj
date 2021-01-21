@@ -4,6 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
+    <Authors>Swisschain</Authors>
+    <Product>Antares</Product>
   </PropertyGroup>
 
   <ItemGroup>

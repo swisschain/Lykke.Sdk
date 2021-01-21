@@ -33,14 +33,15 @@ namespace Antares.Sdk
         public static Task Start<TStartup>(bool isDebug)
             where TStartup : class
         {
-            return Start<TStartup>(isDebug, 5000);
+            return Start<TStartup>(isDebug, 5000, 5001);
         }
 
-        /// <summary>Starts the service listening to provided port.</summary>
+        /// <summary>Starts the service listening to provided httpPort.</summary>
         /// <typeparam name="TStartup">The type of the startup.</typeparam>
-        /// <param name="port">Port that the app is listening to.</param>
+        /// <param name="httpPort">Port that the app is listening to.</param>
         /// /// <param name="isDebug">DEBUG/RELEASE mode flag</param>
-        public static async Task Start<TStartup>(bool isDebug, int port)
+        /// <param name="grpcPort">Grpc Port that the app is listening to.</param>
+        public static async Task Start<TStartup>(bool isDebug, int httpPort, int grpcPort)
             where TStartup : class
         {
             IsDebug = isDebug;
@@ -54,15 +55,14 @@ namespace Antares.Sdk
                 var hostBuilder = _webHostBuilderFactory
                     .CreateWebHostBuilder<TStartup>(options =>
                 {
-                    options.Port = port;
+                    options.Port = httpPort;
+                    options.GrpcPort = grpcPort;
                     options.IsDebug = isDebug;
                 });
 
                 var host = hostBuilder.Build();
                 
                 host.Services.InitAppLifetTime();
-
-                Console.WriteLine($"Running on port: {port}");
 
                 await host.RunAsync();
             }
